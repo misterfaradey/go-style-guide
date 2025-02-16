@@ -1,12 +1,12 @@
-# Copy Slices and Maps at Boundaries
+# Скопируйте срезы и карты на границах
 
-Slices and maps contain pointers to the underlying data so be wary of scenarios
-when they need to be copied.
+Срезы и карты содержат указатели на базовые данные, поэтому будьте осторожны со сценариями
+, когда их необходимо скопировать.
 
-## Receiving Slices and Maps
+## Получение срезов и карт
 
-Keep in mind that users can modify a map or slice you received as an argument
-if you store a reference to it.
+Имейте в виду, что пользователи могут изменять карту или срез, полученные вами в качестве аргумента
+, если вы сохраните ссылку на них.
 
 <table>
 <thead><tr><th>Bad</th> <th>Good</th></tr></thead>
@@ -38,7 +38,7 @@ func (d *Driver) SetTrips(trips []Trip) {
 trips := ...
 d1.SetTrips(trips)
 
-// We can now modify trips[0] without affecting d1.trips.
+// Теперь мы можем изменять trips[0], не затрагивая d1.trips.
 trips[0] = ...
 ```
 
@@ -48,10 +48,10 @@ trips[0] = ...
 </tbody>
 </table>
 
-## Returning Slices and Maps
+## Возвращаем фрагменты и карты
 
-Similarly, be wary of user modifications to maps or slices exposing internal
-state.
+Аналогичным образом, будьте осторожны с пользовательскими изменениями карт или фрагментов, раскрывающими внутреннее
+состояние.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -64,7 +64,7 @@ type Stats struct {
   counters map[string]int
 }
 
-// Snapshot returns the current stats.
+// // Snapshot возвращает текущую статистику.
 func (s *Stats) Snapshot() map[string]int {
   s.mu.Lock()
   defer s.mu.Unlock()
@@ -72,8 +72,8 @@ func (s *Stats) Snapshot() map[string]int {
   return s.counters
 }
 
-// snapshot is no longer protected by the mutex, so any
-// access to the snapshot is subject to data races.
+// моментальный снимок больше не защищен мьютексом, поэтому любой
+// доступ к моментальному снимку зависит от скачков данных.
 snapshot := stats.Snapshot()
 ```
 
@@ -96,7 +96,7 @@ func (s *Stats) Snapshot() map[string]int {
   return result
 }
 
-// Snapshot is now a copy.
+// Snapshot is теперь является копией.
 snapshot := stats.Snapshot()
 ```
 

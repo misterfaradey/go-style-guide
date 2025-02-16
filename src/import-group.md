@@ -1,11 +1,11 @@
-# Import Group Ordering
+# Упорядочение групп импорта
 
-There should be two import groups:
+Должно быть две группы импорта:
 
-- Standard library
-- Everything else
+- Стандартная библиотека
+- Все остальное
 
-This is the grouping applied by goimports by default.
+Это группировка, применяемая goimports по умолчанию.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

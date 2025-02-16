@@ -1,11 +1,11 @@
-# Prefix Unexported Globals with _
+# Добавляйте к неэкспортируемым глобальным символам префикс _
 
-Prefix unexported top-level `var`s and `const`s with `_` to make it clear when
-they are used that they are global symbols.
+Добавляйте к неэкспортируемым символам верхнего уровня "var" и "const" префикс "_", чтобы при
+их использовании было ясно, что они являются глобальными символами.
 
-Rationale: Top-level variables and constants have a package scope. Using a
-generic name makes it easy to accidentally use the wrong value in a different
-file.
+Обоснование: Переменные и константы верхнего уровня имеют область действия пакета. Использование
+общего имени позволяет легко случайно использовать неправильное значение в другом
+файле.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -46,5 +46,5 @@ const (
 </td></tr>
 </tbody></table>
 
-**Exception**: Unexported error values may use the prefix `err` without the underscore.
-See [Error Naming](error-name.md).
+**Исключение**: В неэкспортированных значениях ошибок может использоваться префикс `err` без подчеркивания.
+Смотрите [Наименование ошибки](error-name.md).

@@ -5,134 +5,134 @@
 
 <!-- markdownlint-disable MD033 -->
 
-# Uber Go Style Guide
+# Руководство по стилю Uber Go
 
-- [Introduction](#introduction)
-- [Guidelines](#guidelines)
-  - [Pointers to Interfaces](#pointers-to-interfaces)
-  - [Verify Interface Compliance](#verify-interface-compliance)
-  - [Receivers and Interfaces](#receivers-and-interfaces)
-  - [Zero-value Mutexes are Valid](#zero-value-mutexes-are-valid)
-  - [Copy Slices and Maps at Boundaries](#copy-slices-and-maps-at-boundaries)
-  - [Defer to Clean Up](#defer-to-clean-up)
-  - [Channel Size is One or None](#channel-size-is-one-or-none)
-  - [Start Enums at One](#start-enums-at-one)
-  - [Use `"time"` to handle time](#use-time-to-handle-time)
-  - [Errors](#errors)
-    - [Error Types](#error-types)
-    - [Error Wrapping](#error-wrapping)
-    - [Error Naming](#error-naming)
-    - [Handle Errors Once](#handle-errors-once)
-  - [Handle Type Assertion Failures](#handle-type-assertion-failures)
-  - [Don't Panic](#dont-panic)
-  - [Use go.uber.org/atomic](#use-gouberorgatomic)
-  - [Avoid Mutable Globals](#avoid-mutable-globals)
-  - [Avoid Embedding Types in Public Structs](#avoid-embedding-types-in-public-structs)
-  - [Avoid Using Built-In Names](#avoid-using-built-in-names)
-  - [Avoid `init()`](#avoid-init)
-  - [Exit in Main](#exit-in-main)
-    - [Exit Once](#exit-once)
-  - [Use field tags in marshaled structs](#use-field-tags-in-marshaled-structs)
-  - [Don't fire-and-forget goroutines](#dont-fire-and-forget-goroutines)
-    - [Wait for goroutines to exit](#wait-for-goroutines-to-exit)
-    - [No goroutines in `init()`](#no-goroutines-in-init)
-- [Performance](#performance)
-  - [Prefer strconv over fmt](#prefer-strconv-over-fmt)
-  - [Avoid repeated string-to-byte conversions](#avoid-repeated-string-to-byte-conversions)
-  - [Prefer Specifying Container Capacity](#prefer-specifying-container-capacity)
-- [Style](#style)
-  - [Avoid overly long lines](#avoid-overly-long-lines)
-  - [Be Consistent](#be-consistent)
-  - [Group Similar Declarations](#group-similar-declarations)
-  - [Import Group Ordering](#import-group-ordering)
-  - [Package Names](#package-names)
-  - [Function Names](#function-names)
-  - [Import Aliasing](#import-aliasing)
-  - [Function Grouping and Ordering](#function-grouping-and-ordering)
-  - [Reduce Nesting](#reduce-nesting)
-  - [Unnecessary Else](#unnecessary-else)
-  - [Top-level Variable Declarations](#top-level-variable-declarations)
-  - [Prefix Unexported Globals with _](#prefix-unexported-globals-with-_)
-  - [Embedding in Structs](#embedding-in-structs)
-  - [Local Variable Declarations](#local-variable-declarations)
-  - [nil is a valid slice](#nil-is-a-valid-slice)
-  - [Reduce Scope of Variables](#reduce-scope-of-variables)
-  - [Avoid Naked Parameters](#avoid-naked-parameters)
-  - [Use Raw String Literals to Avoid Escaping](#use-raw-string-literals-to-avoid-escaping)
-  - [Initializing Structs](#initializing-structs)
-    - [Use Field Names to Initialize Structs](#use-field-names-to-initialize-structs)
-    - [Omit Zero Value Fields in Structs](#omit-zero-value-fields-in-structs)
-    - [Use `var` for Zero Value Structs](#use-var-for-zero-value-structs)
-    - [Initializing Struct References](#initializing-struct-references)
-  - [Initializing Maps](#initializing-maps)
-  - [Format Strings outside Printf](#format-strings-outside-printf)
-  - [Naming Printf-style Functions](#naming-printf-style-functions)
-- [Patterns](#patterns)
-  - [Test Tables](#test-tables)
-  - [Functional Options](#functional-options)
-- [Linting](#linting)
+- [Введение](#%D0%B2%D0%B2%D0%B5%D0%B4%D0%B5%D0%BD%D0%B8%D0%B5)
+- [Рекомендации](#рекомендации)
+  - [Указатели на интерфейсы](#%D1%83%D0%BA%D0%B0%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D0%B8-%D0%BD%D0%B0-%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B)
+  - [Проверка соответствия интерфейса](#%D0%BF%D1%80%D0%BE%D0%B2%D0%B5%D1%80%D0%BA%D0%B0-%D1%81%D0%BE%D0%BE%D1%82%D0%B2%D0%B5%D1%82%D1%81%D1%82%D0%B2%D0%B8%D1%8F-%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D0%B0)
+  - [Приемники и интерфейсы](#%D0%BF%D1%80%D0%B8%D0%B5%D0%BC%D0%BD%D0%B8%D0%BA%D0%B8-%D0%B8-%D0%B8%D0%BD%D1%82%D0%B5%D1%80%D1%84%D0%B5%D0%B9%D1%81%D1%8B)
+  - [Допустимы мьютексы с нулевым значением](#%D0%B4%D0%BE%D0%BF%D1%83%D1%81%D1%82%D0%B8%D0%BC%D1%8B-%D0%BC%D1%8C%D1%8E%D1%82%D0%B5%D0%BA%D1%81%D1%8B-%D1%81-%D0%BD%D1%83%D0%BB%D0%B5%D0%B2%D1%8B%D0%BC-%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%D0%BC)
+  - [Копировать фрагменты и карты по границам](#%D1%81%D0%BA%D0%BE%D0%BF%D0%B8%D1%80%D1%83%D0%B9%D1%82%D0%B5-%D1%81%D1%80%D0%B5%D0%B7%D1%8B-%D0%B8-%D0%BA%D0%B0%D1%80%D1%82%D1%8B-%D0%BD%D0%B0-%D0%B3%D1%80%D0%B0%D0%BD%D0%B8%D1%86%D0%B0%D1%85)
+  - [Отложить очистку](#%D0%BE%D1%82%D0%BB%D0%BE%D0%B6%D0%B8%D1%82%D1%8C-%D0%BE%D1%87%D0%B8%D1%81%D1%82%D0%BA%D1%83)
+  - [Размер канала равен единице или отсутствует](#%D1%80%D0%B0%D0%B7%D0%BC%D0%B5%D1%80-%D0%BA%D0%B0%D0%BD%D0%B0%D0%BB%D0%B0-%D1%80%D0%B0%D0%B2%D0%B5%D0%BD-%D0%B5%D0%B4%D0%B8%D0%BD%D0%B8%D1%86%D0%B5-%D0%B8%D0%BB%D0%B8-%D0%BD%D0%B5-%D0%B8%D0%BC%D0%B5%D0%B5%D1%82-%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D1%8F)
+  - [Начинать перечисление с единицы](#%D0%BD%D0%B0%D1%87%D0%B8%D0%BD%D0%B0%D0%B9%D1%82%D0%B5-%D0%BF%D0%B5%D1%80%D0%B5%D1%87%D0%B8%D1%81%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D1%81-%D0%B5%D0%B4%D0%B8%D0%BD%D0%B8%D1%86%D1%8B)
+  - [Используйте `time" для обработки времени](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9%D1%82%D0%B5-time-%D0%B4%D0%BB%D1%8F-%D1%83%D0%BF%D1%80%D0%B0%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%B2%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%B5%D0%BC)
+  - [Ошибки](#ошибки)
+    - [Типы ошибок](#%D1%82%D0%B8%D0%BF%D1%8B-%D0%BE%D1%88%D0%B8%D0%B1%D0%BE%D0%BA)
+    - [Перенос ошибок](#%D0%BF%D0%B5%D1%80%D0%B5%D0%BD%D0%BE%D1%81-%D0%BE%D1%88%D0%B8%D0%B1%D0%BE%D0%BA)
+    - [Присвоение имени ошибке](#%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD-%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0%D0%BC)
+    - [Однократная обработка ошибок](#%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%B0%D1%82%D1%8B%D0%B2%D0%B0%D1%82%D1%8C-%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B8-%D0%BE%D0%B4%D0%B8%D0%BD-%D1%80%D0%B0%D0%B7)
+  - [Обработка ошибок при подтверждении типа](#%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D1%82%D1%8C-%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B8-%D0%BF%D1%80%D0%B8-%D0%BF%D0%BE%D0%B4%D1%82%D0%B2%D0%B5%D1%80%D0%B6%D0%B4%D0%B5%D0%BD%D0%B8%D0%B8-%D1%82%D0%B8%D0%BF%D0%B0)
+  - [Не паникуйте](#%D0%BD%D0%B5-%D0%BF%D0%B0%D0%BD%D0%B8%D0%BA%D1%83%D0%B9%D1%82%D0%B5)
+  - [Используйте go.uber.org/atomic](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9-gouberorgatomic)
+  - [Избегайте изменяемых глобальных параметров](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%B8%D0%B7%D0%BC%D0%B5%D0%BD%D1%8F%D0%B5%D0%BC%D1%8B%D1%85-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85)
+  - [Избегайте встраивания типов в общедоступные структуры](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F-%D1%82%D0%B8%D0%BF%D0%BE%D0%B2-%D0%B2-%D0%BE%D0%B1%D1%89%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D0%B5-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B)
+  - [Избегайте использования встроенных имен](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F-%D0%B2%D1%81%D1%82%D1%80%D0%BE%D0%B5%D0%BD%D0%BD%D1%8B%D1%85-%D0%B8%D0%BC%D0%B5%D0%BD)
+  - [Избегайте `init()`](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-init)
+  - [Выход в главном меню](#%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B8%D1%82%D0%B5-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83-%D0%B2-%D0%B3%D0%BB%D0%B0%D0%B2%D0%BD%D0%BE%D0%BC-%D0%BC%D0%B5%D0%BD%D1%8E)
+    - [Выход один раз](#%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B8%D1%82%D0%B5-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%83-%D0%BE%D0%B4%D0%B8%D0%BD-%D1%80%D0%B0%D0%B7)
+  - [Использовать теги полей в упорядоченных структурах](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9%D1%82%D0%B5-%D1%82%D0%B5%D0%B3%D0%B8-%D0%BF%D0%BE%D0%BB%D0%B5%D0%B9-%D0%B2-%D1%83%D0%BF%D0%BE%D1%80%D1%8F%D0%B4%D0%BE%D1%87%D0%B5%D0%BD%D0%BD%D1%8B%D1%85-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0%D1%85)
+  - [Не запускайте и не забывайте о подпрограммах](#%D0%BD%D0%B5-%D0%B7%D0%B0%D0%BF%D1%83%D1%81%D0%BA%D0%B0%D0%B9%D1%82%D0%B5-%D0%B8-%D0%BD%D0%B5-%D0%B7%D0%B0%D0%B1%D1%8B%D0%B2%D0%B0%D0%B9%D1%82%D0%B5-%D0%BE-%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D0%B0%D1%85)
+    - [Дождитесь завершения подпрограмм](#%D0%B4%D0%BE%D0%B6%D0%B4%D0%B8%D1%82%D0%B5%D1%81%D1%8C-%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%B8%D1%8F-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B-%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B)
+    - [В `init()` нет подпрограмм](#%D0%BD%D0%B8%D0%BA%D0%B0%D0%BA%D0%B8%D1%85-%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC-%D0%B2-init)
+- [Производительность](#%D0%BF%D1%80%D0%BE%D0%B8%D0%B7%D0%B2%D0%BE%D0%B4%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%BE%D1%81%D1%82%D1%8C)
+  - [Предпочитайте strconv, а не fmt](#%D0%BF%D1%80%D0%B5%D0%B4%D0%BF%D0%BE%D1%87%D0%B8%D1%82%D0%B0%D0%B9%D1%82%D0%B5-strconv-%D0%B0-%D0%BD%D0%B5-fmt)
+  - [Избегайте повторных преобразований строк в байты](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%BF%D0%BE%D0%B2%D1%82%D0%BE%D1%80%D0%BD%D1%8B%D1%85-%D0%BF%D1%80%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B7%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D0%B9-%D1%81%D1%82%D1%80%D0%BE%D0%BA-%D0%B2-%D0%B1%D0%B0%D0%B9%D1%82%D1%8B)
+  - [Предпочитайте указывать емкость контейнера](#%D0%BF%D1%80%D0%B5%D0%B4%D0%BF%D0%BE%D1%87%D1%82%D0%B8%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D0%B5%D0%B5-%D1%83%D0%BA%D0%B0%D0%B7%D1%8B%D0%B2%D0%B0%D1%82%D1%8C-%D0%B5%D0%BC%D0%BA%D0%BE%D1%81%D1%82%D1%8C-%D0%BA%D0%BE%D0%BD%D1%82%D0%B5%D0%B9%D0%BD%D0%B5%D1%80%D0%B0)
+- [Стиль](#стиль)
+  - [Избегайте слишком длинных строк](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D1%81%D0%BB%D0%B8%D1%88%D0%BA%D0%BE%D0%BC-%D0%B4%D0%BB%D0%B8%D0%BD%D0%BD%D1%8B%D1%85-%D1%81%D1%82%D1%80%D0%BE%D0%BA)
+  - [Соблюдать последовательность](#%D0%B1%D1%83%D0%B4%D1%8C%D1%82%D0%B5-%D0%BF%D0%BE%D1%81%D0%BB%D0%B5%D0%B4%D0%BE%D0%B2%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B)
+  - [Группировать похожие объявления](#%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D1%82%D1%8C-%D0%BF%D0%BE%D1%85%D0%BE%D0%B6%D0%B8%D0%B5-%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F)
+  - [Групповой порядок импорта](#%D1%83%D0%BF%D0%BE%D1%80%D1%8F%D0%B4%D0%BE%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B3%D1%80%D1%83%D0%BF%D0%BF-%D0%B8%D0%BC%D0%BF%D0%BE%D1%80%D1%82%D0%B0)
+  - [Названия пакетов](#%D0%B8%D0%BC%D0%B5%D0%BD%D0%B0-%D0%BF%D0%B0%D0%BA%D0%B5%D1%82%D0%BE%D0%B2)
+  - [Имена функций](#%D0%B8%D0%BC%D0%B5%D0%BD%D0%B0-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9)
+  - [Сглаживание при импорте](#%D1%81%D0%B3%D0%BB%D0%B0%D0%B6%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%BF%D1%80%D0%B8-%D0%B8%D0%BC%D0%BF%D0%BE%D1%80%D1%82%D0%B5)
+  - [Группировка и упорядочение функций](#%D0%B3%D1%80%D1%83%D0%BF%D0%BF%D0%B8%D1%80%D0%BE%D0%B2%D0%BA%D0%B0-%D0%B8-%D1%83%D0%BF%D0%BE%D1%80%D1%8F%D0%B4%D0%BE%D1%87%D0%B5%D0%BD%D0%B8%D0%B5-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%B9)
+  - [Уменьшение вложенности](#%D1%83%D0%BC%D0%B5%D0%BD%D1%8C%D1%88%D0%B8%D1%82%D1%8C-%D0%B2%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C)
+  - [Ненужное другое](#%D0%BD%D0%B5%D0%BE%D0%B1%D1%8F%D0%B7%D0%B0%D1%82%D0%B5%D0%BB%D1%8C%D0%BD%D1%8B%D0%B9-%D1%8D%D0%BB%D0%B5%D0%BC%D0%B5%D0%BD%D1%82-else)
+  - [Объявления переменных верхнего уровня](#%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85-%D0%B2%D0%B5%D1%80%D1%85%D0%BD%D0%B5%D0%B3%D0%BE-%D1%83%D1%80%D0%BE%D0%B2%D0%BD%D1%8F)
+  - [Добавляйте к неэкспортируемым глобальным значениям префикс _](#%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D0%B9%D1%82%D0%B5-%D0%BA-%D0%BD%D0%B5%D1%8D%D0%BA%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B8%D1%80%D1%83%D0%B5%D0%BC%D1%8B%D0%BC-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%BC-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%B0%D0%BC-%D0%BF%D1%80%D0%B5%D1%84%D0%B8%D0%BA%D1%81-_)
+  - [Встраивание в структуры](#-%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D0%B5-%D0%B2-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B)
+  - [Объявления локальных переменных](#%D0%BE%D0%B1%D1%8A%D1%8F%D0%B2%D0%BB%D0%B5%D0%BD%D0%B8%D1%8F-%D0%BB%D0%BE%D0%BA%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D1%85-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85)
+  - [допустимый фрагмент равен нулю](#nil---%D0%B4%D0%BE%D0%BF%D1%83%D1%81%D1%82%D0%B8%D0%BC%D1%8B%D0%B9-%D1%84%D1%80%D0%B0%D0%B3%D0%BC%D0%B5%D0%BD%D1%82)
+  - [Сокращение области видимости переменных](#%D1%83%D0%BC%D0%B5%D0%BD%D1%8C%D1%88%D0%B8%D1%82%D0%B5-%D0%BE%D0%B1%D0%BB%D0%B0%D1%81%D1%82%D1%8C-%D0%B2%D0%B8%D0%B4%D0%B8%D0%BC%D0%BE%D1%81%D1%82%D0%B8-%D0%BF%D0%B5%D1%80%D0%B5%D0%BC%D0%B5%D0%BD%D0%BD%D1%8B%D1%85)
+  - [Избегайте открытых параметров](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%BE%D1%82%D0%BA%D1%80%D1%8B%D1%82%D1%8B%D1%85-%D0%BF%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D0%BE%D0%B2)
+  - [Используйте необработанные строковые литералы, чтобы избежать экранирования](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9%D1%82%D0%B5-%D0%BD%D0%B5%D0%BE%D0%B1%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D0%B0%D0%BD%D0%BD%D1%8B%D0%B5-%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%BE%D0%B2%D1%8B%D0%B5-%D0%BB%D0%B8%D1%82%D0%B5%D1%80%D0%B0%D0%BB%D1%8B-%D1%87%D1%82%D0%BE%D0%B1%D1%8B-%D0%B8%D0%B7%D0%B1%D0%B5%D0%B6%D0%B0%D1%82%D1%8C-%D1%8D%D0%BA%D1%80%D0%B0%D0%BD%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F)
+  - [Инициализация структур](#инициализация-структур)
+    - [Используйте имена полей для инициализации структур](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9%D1%82%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD%D0%B0-%D0%BF%D0%BE%D0%BB%D0%B5%D0%B9-%D0%B4%D0%BB%D1%8F-%D0%B8%D0%BD%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D0%B8-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80)
+    - [Опустите поля с нулевыми значениями в структурах](#%D0%BE%D0%BF%D1%83%D1%81%D1%82%D0%B8%D1%82%D0%B5-%D0%BF%D0%BE%D0%BB%D1%8F-%D1%81-%D0%BD%D1%83%D0%BB%D0%B5%D0%B2%D1%8B%D0%BC%D0%B8-%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D1%8F%D0%BC%D0%B8-%D0%B2-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D0%B0%D1%85)
+    - [Использовать `var` для структур с нулевым значением](#%D0%B8%D1%81%D0%BF%D0%BE%D0%BB%D1%8C%D0%B7%D1%83%D0%B9%D1%82%D0%B5-var-%D0%B4%D0%BB%D1%8F-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80-%D1%81-%D0%BD%D1%83%D0%BB%D0%B5%D0%B2%D1%8B%D0%BC-%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%D0%BC)
+    - [Инициализация ссылок на структуры](#%D0%B8%D0%BD%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F-%D1%81%D1%81%D1%8B%D0%BB%D0%BE%D0%BA-%D0%BD%D0%B0-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B)
+  - [Инициализация карт](#%D0%B8%D0%BD%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F-%D0%BA%D0%B0%D1%80%D1%82)
+  - [Форматирование строк вне Printf](#%D1%81%D1%82%D1%80%D0%BE%D0%BA%D0%B8-%D1%84%D0%BE%D1%80%D0%BC%D0%B0%D1%82%D0%B8%D1%80%D0%BE%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F-%D0%B2%D0%BD%D0%B5-printf)
+  - [Присвоение имен функциям в стиле Printf](#%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD-%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D1%8F%D0%BC-%D0%B2-%D1%81%D1%82%D0%B8%D0%BB%D0%B5-printf)
+- [Шаблоны](#шаблоны)
+  - [Тестовые таблицы](#%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5-%D1%82%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D1%8B)
+  - [Функциональные опции](#%D1%84%D1%83%D0%BD%D0%BA%D1%86%D0%B8%D0%BE%D0%BD%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%B5-%D0%BF%D0%B0%D1%80%D0%B0%D0%BC%D0%B5%D1%82%D1%80%D1%8B)
+- [Подкладка](#linting)
 
-## Introduction
+## Введение
 
-Styles are the conventions that govern our code. The term style is a bit of a
-misnomer, since these conventions cover far more than just source file
-formatting—gofmt handles that for us.
+Стили - это соглашения, которые управляют нашим кодом. Термин "стиль" несколько
+неуместен, поскольку эти соглашения охватывают гораздо больше, чем просто
+форматирование исходного файла — gofmt обрабатывает это за нас.
 
-The goal of this guide is to manage this complexity by describing in detail the
-Dos and Don'ts of writing Go code at Uber. These rules exist to keep the code
-base manageable while still allowing engineers to use Go language features
-productively.
+Цель данного руководства - справиться с этой сложностью, подробно описав
+Что можно и чего нельзя делать при написании кода Go в Uber. Эти правила существуют для того, чтобы обеспечить
+управляемость кодовой базой и в то же время позволить инженерам продуктивно использовать возможности языка Go
+.
 
-This guide was originally created by [Prashant Varanasi](https://github.com/prashantv) and [Simon Newton](https://github.com/nomis52) as
-a way to bring some colleagues up to speed with using Go. Over the years it has
-been amended based on feedback from others.
+Это руководство было первоначально создано [Прашантом Варанаси] и [Саймоном Ньютоном] в качестве
+это способ познакомить некоторых коллег с использованием Go. За прошедшие годы в него
+были внесены изменения, основанные на отзывах других пользователей.
 
-This documents idiomatic conventions in Go code that we follow at Uber. A lot
-of these are general guidelines for Go, while others extend upon external
-resources:
+Это документирует идиоматические соглашения в коде Go, которым мы следуем в Uber. Многие
+из них являются общими рекомендациями для Go, в то время как другие распространяются на внешние
+ресурсы:
 
-1. [Effective Go](https://go.dev/doc/effective_go)
-2. [Go Common Mistakes](https://go.dev/wiki/CommonMistakes)
-3. [Go Code Review Comments](https://go.dev/wiki/CodeReviewComments)
+1. [Эффективный Go](https://go.dev/doc/effective_go)
+2. [Распространенные ошибки Go](https://go.dev/wiki/CommonMistakes)
+3. [Комментарии к обзору кода Go](https://go.dev/wiki/CodeReviewComments)
 
-We aim for the code samples to be accurate for the two most recent minor versions
-of Go [releases](https://go.dev/doc/devel/release).
+Мы стремимся к тому, чтобы примеры кода были точными для двух последних версий
+Go (https://go.dev/doc/devel/release).
 
-All code should be error-free when run through `golint` and `go vet`. We
-recommend setting up your editor to:
+Весь код должен быть безошибочным при запуске через `golint` и `go vet`. Мы
+рекомендуем настроить ваш редактор таким образом, чтобы:
 
-- Run `goimports` on save
-- Run `golint` and `go vet` to check for errors
+- Запустите `goimports` при сохранении
+- Запустите `golint` и `go vet`, чтобы проверить наличие ошибок
 
-You can find information in editor support for Go tools here:
+Вы можете найти информацию о поддержке редактора инструментов Go здесь:
 https://go.dev/wiki/IDEsAndTextEditorPlugins
 
-## Guidelines
+## Рекомендации
 
-### Pointers to Interfaces
+### Указатели на интерфейсы
 
-You almost never need a pointer to an interface. You should be passing
-interfaces as values—the underlying data can still be a pointer.
+Указатель на интерфейс практически никогда не требуется. Вы должны передавать
+интерфейсы в виде значений — базовые данные все равно могут быть указателями.
 
-An interface is two fields:
+Интерфейс - это два поля:
 
-1. A pointer to some type-specific information. You can think of this as
-   "type."
-2. Data pointer. If the data stored is a pointer, it’s stored directly. If
-   the data stored is a value, then a pointer to the value is stored.
+1. Указатель на некоторую информацию, относящуюся к определенному типу. Вы можете представить это как
+   "тип".
+2. Указатель на данные. Если сохраненные данные являются указателем, они сохраняются непосредственно. Если
+   сохраненные данные являются значением, то сохраняется указатель на значение.
 
-If you want interface methods to modify the underlying data, you must use a
-pointer.
+Если вы хотите, чтобы интерфейсные методы изменяли базовые данные, вы должны использовать
+указатель.
 
-### Verify Interface Compliance
+### Проверка соответствия интерфейса
 
-Verify interface compliance at compile time where appropriate. This includes:
+При необходимости проверьте соответствие интерфейса во время компиляции. Это включает в себя:
 
-- Exported types that are required to implement specific interfaces as part of
-  their API contract
-- Exported or unexported types that are part of a collection of types
-  implementing the same interface
-- Other cases where violating an interface would break users
+- Экспортированные типы, которые требуются для реализации определенных интерфейсов в рамках
+  их контракта API
+- Экспортированные или неэкспортированные типы, которые являются частью коллекции типов
+  реализующих один и тот же интерфейс
+- Другие случаи, когда нарушение интерфейса может привести к нарушению работы пользователей
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -174,12 +174,12 @@ func (h *Handler) ServeHTTP(
 </td></tr>
 </tbody></table>
 
-The statement `var _ http.Handler = (*Handler)(nil)` will fail to compile if
-`*Handler` ever stops matching the `http.Handler` interface.
+Оператор `var _ http.Handler = (*Handler)(nil)` не удастся скомпилировать, если
+`*Handler` когда-либо перестанет соответствовать интерфейсу `http.Handler`.
 
-The right hand side of the assignment should be the zero value of the asserted
-type. This is `nil` for pointer types (like `*Handler`), slices, and maps, and
-an empty struct for struct types.
+В правой части присваивания должно быть нулевое значение указанного
+типа. Это значение равно "nil" для типов указателей (например, "*Handler"), срезов и отображений, а
+также пустой struct для структурных типов.
 
 ```go
 type LogHandler struct {
@@ -197,12 +197,12 @@ func (h LogHandler) ServeHTTP(
 }
 ```
 
-### Receivers and Interfaces
+### Приемники и интерфейсы
 
-Methods with value receivers can be called on pointers as well as values.
-Methods with pointer receivers can only be called on pointers or [addressable values](https://go.dev/ref/spec#Method_values).
+Методы с приемниками значений могут вызываться как для указателей, так и для значений.
+Методы с приемниками указателей могут вызываться только для указателей или [адресуемых значений].
 
-For example,
+Например,
 
 ```go
 type S struct {
@@ -217,31 +217,31 @@ func (s *S) Write(str string) {
   s.data = str
 }
 
-// We cannot get pointers to values stored in maps, because they are not
-// addressable values.
+// Мы не можем получить указатели на значения, хранящиеся в картах, потому что они не являются
+// адресуемыми значениями.
 sVals := map[int]S{1: {"A"}}
 
-// We can call Read on values stored in the map because Read
-// has a value receiver, which does not require the value to
-// be addressable.
+// Мы можем вызвать Read для значений, хранящихся в map, потому что Read
+// имеет приемник значений, который не требует, чтобы значение
+// было адресуемым.
 sVals[1].Read()
 
-// We cannot call Write on values stored in the map because Write
-// has a pointer receiver, and it's not possible to get a pointer
-// to a value stored in a map.
+// Мы не можем вызвать функцию Write для значений, хранящихся на карте, потому что функция Write
+// имеет приемник указателей, а получить указатель
+// на значение, хранящееся на карте, невозможно.
 //
-//  sVals[1].Write("test")
+// sVals[1].Write("test")
 
 sPtrs := map[int]*S{1: {"A"}}
 
-// You can call both Read and Write if the map stores pointers,
-// because pointers are intrinsically addressable.
+// Вы можете вызывать как Read, так и Write, если карта хранит указатели,
+// потому что указатели по своей сути адресуемы.
 sPtrs[1].Read()
 sPtrs[1].Write("test")
 ```
 
-Similarly, an interface can be satisfied by a pointer, even if the method has a
-value receiver.
+Аналогично, интерфейс может быть удовлетворен указателем, даже если у метода есть
+получатель значений.
 
 ```go
 type F interface {
@@ -266,16 +266,16 @@ i = s1Val
 i = s1Ptr
 i = s2Ptr
 
-// The following doesn't compile, since s2Val is a value, and there is no value receiver for f.
-//   i = s2Val
+// // Следующее не скомпилируется, поскольку s2Val - это значение, а для f нет приемника значений.
+// i = s2Val
 ```
 
-Effective Go has a good write up on [Pointers vs. Values](https://go.dev/doc/effective_go#pointers_vs_values).
+В Effective Go есть хорошая статья о [указатели и  значения](https://go.dev/doc/effective_go#pointers_vs_values).
 
-### Zero-value Mutexes are Valid
+### Допустимы мьютексы с нулевым значением
 
-The zero-value of `sync.Mutex` and `sync.RWMutex` is valid, so you almost
-never need a pointer to a mutex.
+Допустимо нулевое значение `sync.Mutex` и `sync.RWMutex`, поэтому вам почти
+никогда не понадобится указатель на мьютекс.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -297,8 +297,8 @@ mu.Lock()
 </td></tr>
 </tbody></table>
 
-If you use a struct by pointer, then the mutex should be a non-pointer field on
-it. Do not embed the mutex on the struct, even if the struct is not exported.
+Если вы используете структуру по указателю, то мьютекс должен быть полем без указателя на
+него. Не вставляйте мьютекс в структуру, даже если структура не экспортируется.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -353,26 +353,26 @@ func (m *SMap) Get(k string) string {
 
 <tr><td>
 
-The `Mutex` field, and the `Lock` and `Unlock` methods are unintentionally part
-of the exported API of `SMap`.
+Поле `Mutex`, а также методы "Lock" и "Unlock" непреднамеренно являются частью
+экспортируемого API `SMap`.
 
 </td><td>
 
-The mutex and its methods are implementation details of `SMap` hidden from its
-callers.
+Мьютекс и его методы - это детали реализации SMap, скрытые от
+вызывающих его объектов.
 
 </td></tr>
 </tbody></table>
 
-### Copy Slices and Maps at Boundaries
+### Скопируйте срезы и карты на границах
 
-Slices and maps contain pointers to the underlying data so be wary of scenarios
-when they need to be copied.
+Срезы и карты содержат указатели на базовые данные, поэтому будьте осторожны со сценариями
+, когда их необходимо скопировать.
 
-#### Receiving Slices and Maps
+#### Получение срезов и карт
 
-Keep in mind that users can modify a map or slice you received as an argument
-if you store a reference to it.
+Имейте в виду, что пользователи могут изменять карту или срез, полученные вами в качестве аргумента
+, если вы сохраните ссылку на них.
 
 <table>
 <thead><tr><th>Bad</th> <th>Good</th></tr></thead>
@@ -404,7 +404,7 @@ func (d *Driver) SetTrips(trips []Trip) {
 trips := ...
 d1.SetTrips(trips)
 
-// We can now modify trips[0] without affecting d1.trips.
+// Теперь мы можем изменять trips[0], не затрагивая d1.trips.
 trips[0] = ...
 ```
 
@@ -414,10 +414,10 @@ trips[0] = ...
 </tbody>
 </table>
 
-#### Returning Slices and Maps
+#### Возвращаем фрагменты и карты
 
-Similarly, be wary of user modifications to maps or slices exposing internal
-state.
+Аналогичным образом, будьте осторожны с пользовательскими изменениями карт или фрагментов, раскрывающими внутреннее
+состояние.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -430,7 +430,7 @@ type Stats struct {
   counters map[string]int
 }
 
-// Snapshot returns the current stats.
+// // Snapshot возвращает текущую статистику.
 func (s *Stats) Snapshot() map[string]int {
   s.mu.Lock()
   defer s.mu.Unlock()
@@ -438,8 +438,8 @@ func (s *Stats) Snapshot() map[string]int {
   return s.counters
 }
 
-// snapshot is no longer protected by the mutex, so any
-// access to the snapshot is subject to data races.
+// моментальный снимок больше не защищен мьютексом, поэтому любой
+// доступ к моментальному снимку зависит от скачков данных.
 snapshot := stats.Snapshot()
 ```
 
@@ -462,16 +462,16 @@ func (s *Stats) Snapshot() map[string]int {
   return result
 }
 
-// Snapshot is now a copy.
+// Snapshot is теперь является копией.
 snapshot := stats.Snapshot()
 ```
 
 </td></tr>
 </tbody></table>
 
-### Defer to Clean Up
+### Отложить очистку
 
-Use defer to clean up resources such as files and locks.
+Используйте функцию отложить для очистки ресурсов, таких как файлы и блокировки.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -491,7 +491,7 @@ p.Unlock()
 
 return newCount
 
-// easy to miss unlocks due to multiple returns
+// легко пропускаемые разблокировки из-за многократных возвратов
 ```
 
 </td><td>
@@ -507,25 +507,25 @@ if p.count < 10 {
 p.count++
 return p.count
 
-// more readable
+// более читабельный
 ```
 
 </td></tr>
 </tbody></table>
 
-Defer has an extremely small overhead and should be avoided only if you can
-prove that your function execution time is in the order of nanoseconds. The
-readability win of using defers is worth the miniscule cost of using them. This
-is especially true for larger methods that have more than simple memory
-accesses, where the other computations are more significant than the `defer`.
+При использовании Defer накладные расходы чрезвычайно малы, и их следует избегать, только если вы можете
+доказать, что время выполнения вашей функции составляет порядка наносекунд. Преимущество
+использования defer в удобочитаемости оправдывает минимальные затраты на их использование. Это
+особенно верно для более крупных методов, которые имеют нечто большее, чем простой
+доступ к памяти, где другие вычисления более важны, чем "отсрочка`.
 
-### Channel Size is One or None
+### Размер канала равен единице или не имеет значения
 
-Channels should usually have a size of one or be unbuffered. By default,
-channels are unbuffered and have a size of zero. Any other size
-must be subject to a high level of scrutiny. Consider how the size is
-determined, what prevents the channel from filling up under load and blocking
-writers, and what happens when this occurs.
+Каналы обычно должны иметь размер, равный единице, или быть небуферизованными. По умолчанию
+каналы не имеют буферизации и имеют нулевой размер. Любой другой размер
+должен быть предметом тщательной проверки. Рассмотрим, как
+определяется размер, что препятствует заполнению канала под нагрузкой и блокированию
+записи, и что происходит, когда это происходит.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -533,27 +533,27 @@ writers, and what happens when this occurs.
 <tr><td>
 
 ```go
-// Ought to be enough for anybody!
+// Этого должно быть достаточно для любого!
 c := make(chan int, 64)
 ```
 
 </td><td>
 
 ```go
-// Size of one
-c := make(chan int, 1) // or
-// Unbuffered channel, size of zero
+// размера 1
+c := make(chan int, 1) // или
+// Небуферизованный канал, размер которого равен нулю
 c := make(chan int)
 ```
 
 </td></tr>
 </tbody></table>
 
-### Start Enums at One
+### Начинайте перечисления с единицы
 
-The standard way of introducing enumerations in Go is to declare a custom type
-and a `const` group with `iota`. Since variables have a 0 default value, you
-should usually start your enums on a non-zero value.
+Стандартный способ введения перечислений в Go - это объявить пользовательский тип
+и группу `const` с помощью `iota`. Поскольку переменные по умолчанию имеют значение 0,
+обычно вы должны начинать перечисления с ненулевого значения.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -589,8 +589,8 @@ const (
 </td></tr>
 </tbody></table>
 
-There are cases where using the zero value makes sense, for example when the
-zero value case is the desirable default behavior.
+Есть случаи, когда использование нулевого значения имеет смысл, например, когда
+нулевое значение является желательным поведением по умолчанию.
 
 ```go
 type LogOutput int
@@ -606,27 +606,27 @@ const (
 
 <!-- TODO: section on String methods for enums -->
 
-### Use `"time"` to handle time
+### Используйте `time` для управления временем
 
-Time is complicated. Incorrect assumptions often made about time include the
-following.
+Время - это сложная штука. Часто делаются следующие неверные предположения о времени
+.
 
-1. A day has 24 hours
-2. An hour has 60 minutes
-3. A week has 7 days
-4. A year has 365 days
-5. [And a lot more](https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time)
+1. В сутках 24 часа
+2. В часе 60 минут
+3. В неделе 7 дней
+4. В году 365 дней
+5. [И многое другое](https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time)
 
-For example, *1* means that adding 24 hours to a time instant will not always
-yield a new calendar day.
+Например, *1* означает, что добавление 24 часов к моменту времени не всегда
+приводит к появлению нового календарного дня.
 
-Therefore, always use the [`"time"`](https://pkg.go.dev/time) package when dealing with time because it
-helps deal with these incorrect assumptions in a safer, more accurate manner.
+Поэтому всегда используйте пакет [`"time"`](https://pkg.go.dev/time) при работе со временем, поскольку он
+помогает справиться с этими неверными предположениями более безопасным и точным способом.
 
-#### Use `time.Time` for instants of time
+#### Используйте `time.Time` для значений моментов времени
 
-Use [`time.Time`](https://pkg.go.dev/time#Time) when dealing with instants of time, and the methods on
-`time.Time` when comparing, adding, or subtracting time.
+Используйте [`time.Time`](https://pkg.go.dev/time#Time) при работе с моментами времени и методы
+"time.Время" при сравнении, сложении или вычитании времени.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -650,9 +650,9 @@ func isActive(now, start, stop time.Time) bool {
 </td></tr>
 </tbody></table>
 
-#### Use `time.Duration` for periods of time
+#### Используйте `time.Продолжительность` для обозначения периодов времени
 
-Use [`time.Duration`](https://pkg.go.dev/time#Duration) when dealing with periods of time.
+Используйте [`time.Длительность"], когда речь идет о периодах времени.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -667,7 +667,7 @@ func poll(delay int) {
   }
 }
 
-poll(10) // was it seconds or milliseconds?
+poll(10) // это были секунды или миллисекунды?
 ```
 
 </td><td>
@@ -686,36 +686,36 @@ poll(10*time.Second)
 </td></tr>
 </tbody></table>
 
-Going back to the example of adding 24 hours to a time instant, the method we
-use to add time depends on intent. If we want the same time of the day, but on
-the next calendar day, we should use [`Time.AddDate`](https://pkg.go.dev/time#Time.AddDate). However, if we want an
-instant of time guaranteed to be 24 hours after the previous time, we should
-use [`Time.Add`](https://pkg.go.dev/time#Time.Add).
+Возвращаясь к примеру добавления 24 часов к моменту времени, метод, который мы
+используем для добавления времени, зависит от цели. Если мы хотим получить то же время суток, но на
+следующий календарный день, мы должны использовать [`Time.AddDate`](https://pkg.go.dev/time#Time.AddDate). Однако, если мы хотим
+, чтобы момент времени гарантированно был на 24 часа позже предыдущего, мы должны
+использовать [`Time.Add`](https://pkg.go.dev/time#Time.Add).
 
 ```go
 newDay := t.AddDate(0 /* years */, 0 /* months */, 1 /* days */)
 maybeNewDay := t.Add(24 * time.Hour)
 ```
 
-#### Use `time.Time` and `time.Duration` with external systems
+#### Используйте `time.Time` и `time.Duration` во внешних системах
 
-Use `time.Duration` and `time.Time` in interactions with external systems when
-possible. For example:
+По возможности используйте `time.Duration` и `time.Time` при взаимодействии с внешними системами
+. Например:
 
-- Command-line flags: [`flag`](https://pkg.go.dev/flag) supports `time.Duration` via
+- Флаги командной строки: [`flag`](https://pkg.go.dev/flag) поддерживает "time".Длительность" с помощью
   [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration)
-- JSON: [`encoding/json`](https://pkg.go.dev/encoding/json) supports encoding `time.Time` as an [RFC 3339](https://tools.ietf.org/html/rfc3339)
-  string via its [`UnmarshalJSON` method](https://pkg.go.dev/time#Time.UnmarshalJSON)
-- SQL: [`database/sql`](https://pkg.go.dev/database/sql) supports converting `DATETIME` or `TIMESTAMP` columns
-  into `time.Time` and back if the underlying driver supports it
-- YAML: [`gopkg.in/yaml.v2`](https://pkg.go.dev/gopkg.in/yaml.v2) supports `time.Time` as an [RFC 3339](https://tools.ietf.org/html/rfc3339) string, and
-  `time.Duration` via [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration).
+- JSON: [`encoding/json`](https://pkg.go.dev/encoding/json) поддерживает кодировку `time.Time` в виде строки [RFC 3339](https://tools.ietf.org/html/rfc3339)
+  с помощью метода [`UnmarshalJSON`]
+- SQL: [`database/sql`](https://pkg.go.dev/database/sql) поддерживает преобразование столбцов `DATETIME` или `TIMESTAMP`
+  в `time.Time` и обратно, если базовый драйвер поддерживает это
+- YAML: [`gopkg.in/yaml.v2`](https://pkg.go.dev/gopkg.in/yaml.v2) поддерживает `time.Time` в виде строки [RFC 3339](https://tools.ietf.org/html/rfc3339), и
+  `time.Duration` через [`time.ParseDuration`](https://pkg.go.dev/time#ParseDuration).
 
-When it is not possible to use `time.Duration` in these interactions, use
-`int` or `float64` and include the unit in the name of the field.
+Если использовать `time.Duration` невозможно в этих взаимодействиях, используйте
+`int` или `float64` и укажите единицу измерения в названии поля.
 
-For example, since `encoding/json` does not support `time.Duration`, the unit
-is included in the name of the field.
+Например, поскольку `encoding/json` не поддерживает `time.Duration`, единица
+измерения включена в название поля.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -741,45 +741,45 @@ type Config struct {
 </td></tr>
 </tbody></table>
 
-When it is not possible to use `time.Time` in these interactions, unless an
-alternative is agreed upon, use `string` and format timestamps as defined in
-[RFC 3339](https://tools.ietf.org/html/rfc3339). This format is used by default by [`Time.UnmarshalText`](https://pkg.go.dev/time#Time.UnmarshalText) and is
-available for use in `Time.Format` and `time.Parse` via [`time.RFC3339`](https://pkg.go.dev/time#RFC3339).
+Когда использовать `time.Time` невозможно.При таких взаимодействиях, если
+не согласован альтернативный вариант, используйте "string" и форматируйте временные метки, как определено в
+[RFC 3339](https://tools.ietf.org/html/rfc3339). Этот формат по умолчанию используется [`Time.UnmarshalText`](https://pkg.go.dev/time#Time.UnmarshalText) и
+доступен для использования в `Time.Format` и `time.Parse` с помощью [`time.RFC3339`](https://pkg.go.dev/time#RFC3339).
 
-Although this tends to not be a problem in practice, keep in mind that the
-`"time"` package does not support parsing timestamps with leap seconds
-([8728](https://github.com/golang/go/issues/8728)), nor does it account for leap seconds in calculations ([15190](https://github.com/golang/go/issues/15190)). If
-you compare two instants of time, the difference will not include the leap
-seconds that may have occurred between those two instants.
+Хотя на практике это, как правило, не является проблемой, имейте в виду, что
+пакет `"time"` не поддерживает синтаксический анализ временных меток с использованием високосных секунд
+([8728](https://github.com/golang/go/issues/8728)), а также не учитывает високосные секунды в расчетах ([15190](https://github.com/golang/go/issues/15190)). Если
+вы сравниваете два момента времени, разница не будет включать в себя високосные
+секунды, которые могли произойти между этими двумя моментами.
 
-### Errors
+### Ошибки
 
-#### Error Types
+#### Типы ошибок
 
-There are few options for declaring errors.
-Consider the following before picking the option best suited for your use case.
+Существует несколько вариантов объявления ошибок.
+Прежде чем выбрать вариант, наиболее подходящий для вашего варианта использования, рассмотрите следующее.
 
-- Does the caller need to match the error so that they can handle it?
-  If yes, we must support the [`errors.Is`](https://pkg.go.dev/errors#Is) or [`errors.As`](https://pkg.go.dev/errors#As) functions
-  by declaring a top-level error variable or a custom type.
-- Is the error message a static string,
-  or is it a dynamic string that requires contextual information?
-  For the former, we can use [`errors.New`](https://pkg.go.dev/errors#New), but for the latter we must
-  use [`fmt.Errorf`](https://pkg.go.dev/fmt#Errorf) or a custom error type.
-- Are we propagating a new error returned by a downstream function?
-  If so, see the [section on error wrapping](#error-wrapping).
+- Должен ли вызывающий объект сопоставлять ошибку, чтобы он мог ее обработать?
+  Если да, мы должны поддерживать ошибки [`.Is`] или [`ошибки.Как`] функции
+  путем объявления переменной ошибки верхнего уровня или пользовательского типа.
+- Является ли сообщение об ошибке статической строкой
+  или динамической строкой, требующей контекстной информации?
+  Для первого мы можем использовать [`errors.New`](https://pkg.go.dev/errors#New), но для второго мы должны
+  использовать [`fmt.Errorf`](https://pkg.go.dev/fmt#Errorf) или пользовательский тип ошибки.
+- Распространяем ли мы новую ошибку, возвращаемую нисходящей функцией?
+  Если да, то смотрите [раздел, посвященный переносу ошибок](#%D0%BF%D0%B5%D1%80%D0%B5%D0%BD%D0%BE%D1%81-%D0%BE%D1%88%D0%B8%D0%B1%D0%BE%D0%BA).
 
 | Error matching? | Error Message | Guidance                                                           |
 |-----------------|---------------|--------------------------------------------------------------------|
 | No              | static        | [`errors.New`](https://pkg.go.dev/errors#New)                      |
 | No              | dynamic       | [`fmt.Errorf`](https://pkg.go.dev/fmt#Errorf)                      |
 | Yes             | static        | top-level `var` with [`errors.New`](https://pkg.go.dev/errors#New) |
-| Yes             | dynamic       | custom `error` type                                                |
+| Yes             | dynamic       | пользовательский тип `error`                                       |
 
-For example,
-use [`errors.New`](https://pkg.go.dev/errors#New) for an error with a static string.
-Export this error as a variable to support matching it with `errors.Is`
-if the caller needs to match and handle this error.
+Например,
+используйте [`errors.New`](https://pkg.go.dev/errors#New) для ошибки со статической строкой.
+Экспортируйте эту ошибку в качестве переменной, чтобы поддерживать сопоставление с `errors.Is",
+если вызывающей стороне необходимо сопоставить и обработать эту ошибку.
 
 <table>
 <thead><tr><th>No error matching</th><th>Error matching</th></tr></thead>
@@ -826,9 +826,9 @@ if err := foo.Open(); err != nil {
 </td></tr>
 </tbody></table>
 
-For an error with a dynamic string,
-use [`fmt.Errorf`](https://pkg.go.dev/fmt#Errorf) if the caller does not need to match it,
-and a custom `error` if the caller does need to match it.
+Для ошибки с динамической строкой
+используйте [`fmt.Errorf`](https://pkg.go.dev/fmt#Errorf), если вызывающей стороне не нужно сопоставлять ее,
+и пользовательскую "ошибку", если вызывающей стороне действительно нужно сопоставить ее.
 
 <table>
 <thead><tr><th>No error matching</th><th>Error matching</th></tr></thead>
@@ -883,43 +883,43 @@ if err := foo.Open("testfile.txt"); err != nil {
 </td></tr>
 </tbody></table>
 
-Note that if you export error variables or types from a package,
-they will become part of the public API of the package.
+Обратите внимание, что если вы экспортируете переменные или типы ошибок из пакета,
+они станут частью общедоступного API пакета.
 
-#### Error Wrapping
+#### Перенос ошибок
 
-There are three main options for propagating errors if a call fails:
+Существует три основных варианта распространения ошибок в случае сбоя вызова:
 
-- return the original error as-is
-- add context with `fmt.Errorf` and the `%w` verb
-- add context with `fmt.Errorf` and the `%v` verb
+- вернуть исходную ошибку как есть
+- добавить контекст с помощью `fmt.Errorf` и глагола `%w`
+- добавьте контекст с помощью `fmt.Errorf` и глагола `%v`
 
-Return the original error as-is if there is no additional context to add.
-This maintains the original error type and message.
-This is well suited for cases when the underlying error message
-has sufficient information to track down where it came from.
+Верните исходную ошибку как есть, если нет дополнительного контекста для добавления.
+При этом сохраняются исходный тип ошибки и сообщение.
+Это хорошо подходит для случаев, когда исходное сообщение об ошибке
+содержит достаточно информации, чтобы отследить, откуда оно пришло.
 
-Otherwise, add context to the error message where possible
-so that instead of a vague error such as "connection refused",
-you get more useful errors such as "call service foo: connection refused".
+В противном случае, по возможности, добавьте контекст к сообщению об ошибке
+, чтобы вместо неопределенной ошибки, такой как "отказано в подключении", отображалась ошибка,
+вы получаете более полезные ошибки, такие как "вызов службы foo: отказано в подключении".
 
-Use `fmt.Errorf` to add context to your errors,
-picking between the `%w` or `%v` verbs
-based on whether the caller should be able to
-match and extract the underlying cause.
+Используйте `fmt.Errorf`, чтобы добавить контекст к вашим ошибкам,
+выбирая между глаголами `%w` или `%v`
+в зависимости от того, сможет ли вызывающий
+объект сопоставить и извлечь основную причину.
 
-- Use `%w` if the caller should have access to the underlying error.
-  This is a good default for most wrapped errors,
-  but be aware that callers may begin to rely on this behavior.
-  So for cases where the wrapped error is a known `var` or type,
-  document and test it as part of your function's contract.
-- Use `%v` to obfuscate the underlying error.
-  Callers will be unable to match it,
-  but you can switch to `%w` in the future if needed.
+- Используйте `%w`, если вызывающий абонент должен иметь доступ к основной ошибке.
+  Это хорошее значение по умолчанию для большинства обернутых ошибок,
+  но имейте в виду, что вызывающие абоненты могут начать полагаться на такое поведение.
+  Таким образом, в случаях, когда обернутая ошибка является известным значением "var" или типом,
+  задокументируйте и протестируйте ее как часть контракта вашей функции.
+- Используйте `%v`, чтобы скрыть основную ошибку.
+  Вызывающие абоненты не смогут найти ее,
+  но вы можете переключиться на "%w" в будущем, если потребуется.
 
-When adding context to returned errors, keep the context succinct by avoiding
-phrases like "failed to", which state the obvious and pile up as the error
-percolates up through the stack:
+При добавлении контекста к возвращаемым ошибкам сохраняйте краткость контекста, избегая
+таких фраз, как "не удалось выполнить", которые указывают на очевидное и накапливаются по мере распространения ошибки
+по стеку:
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -959,41 +959,41 @@ x: y: new store: the error
 </td></tr>
 </tbody></table>
 
-However once the error is sent to another system, it should be clear the
-message is an error (e.g. an `err` tag or "Failed" prefix in logs).
+Однако, как только ошибка отправляется в другую систему, должно быть ясно
+, что сообщение является ошибкой (например, тег "err" или префикс "Failed" в журналах).
 
-See also [Don't just check errors, handle them gracefully](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully).
+Смотрите также [Не просто проверяйте ошибки, а корректно обрабатывайте их](https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully).
 
-#### Error Naming
+#### Присвоение имен ошибкам
 
-For error values stored as global variables,
-use the prefix `Err` or `err` depending on whether they're exported.
-This guidance supersedes the [Prefix Unexported Globals with _](#prefix-unexported-globals-with-_).
+Для значений ошибок, сохраненных в виде глобальных переменных,
+используйте префикс "Err" или "ошибка" в зависимости от того, были ли они экспортированы.
+Это руководство заменяет [Префикс неэкспортированных глобальных переменных на _](#%D0%B4%D0%BE%D0%B1%D0%B0%D0%B2%D0%BB%D1%8F%D0%B9%D1%82%D0%B5-%D0%BA-%D0%BD%D0%B5%D1%8D%D0%BA%D1%81%D0%BF%D0%BE%D1%80%D1%82%D0%B8%D1%80%D1%83%D0%B5%D0%BC%D1%8B%D0%BC-%D0%B3%D0%BB%D0%BE%D0%B1%D0%B0%D0%BB%D1%8C%D0%BD%D1%8B%D0%BC-%D1%81%D0%B8%D0%BC%D0%B2%D0%BE%D0%BB%D0%B0%D0%BC-%D0%BF%D1%80%D0%B5%D1%84%D0%B8%D0%BA%D1%81-_).
 
 ```go
 var (
-  // The following two errors are exported
-  // so that users of this package can match them
-  // with errors.Is.
+  // Следующие две ошибки экспортированы,
+  // чтобы пользователи этого пакета могли сопоставить их
+  // с errors.Is.
 
   ErrBrokenLink = errors.New("link is broken")
   ErrCouldNotOpen = errors.New("could not open")
 
-  // This error is not exported because
-  // we don't want to make it part of our public API.
-  // We may still use it inside the package
-  // with errors.Is.
+  // Эта ошибка не экспортируется, потому что
+  // мы не хотим делать ее частью нашего общедоступного API.
+  // Мы все еще можем использовать ее внутри пакета
+  // с помощью errors.Is.
 
   errNotFound = errors.New("not found")
 )
 ```
 
-For custom error types, use the suffix `Error` instead.
+Для пользовательских типов ошибок используйте вместо них суффикс `Error`.
 
 ```go
-// Similarly, this error is exported
-// so that users of this package can match it
-// with errors.As.
+// Аналогично, эта ошибка экспортируется,
+//чтобы пользователи этого пакета могли сопоставить ее
+// с errors.As.
 
 type NotFoundError struct {
   File string
@@ -1003,10 +1003,10 @@ func (e *NotFoundError) Error() string {
   return fmt.Sprintf("file %q not found", e.File)
 }
 
-// And this error is not exported because
-// we don't want to make it part of the public API.
-// We can still use it inside the package
-// with errors.As.
+// И эта ошибка не экспортируется, потому что
+// мы не хотим делать ее частью общедоступного API.
+// Мы все еще можем использовать ее внутри пакета
+// с помощью errors.As.
 
 type resolveError struct {
   Path string
@@ -1017,39 +1017,39 @@ func (e *resolveError) Error() string {
 }
 ```
 
-#### Handle Errors Once
+#### Обрабатывать ошибки один раз
 
-When a caller receives an error from a callee,
-it can handle it in a variety of different ways
-depending on what it knows about the error.
+Когда вызывающий абонент получает сообщение об ошибке от вызываемого объекта,
+он может обрабатывать его различными способами
+в зависимости от того, что ему известно об ошибке.
 
-These include, but not are limited to:
+К ним относятся, но не ограничиваются ими:
 
-- if the callee contract defines specific errors,
-  matching the error with `errors.Is` or `errors.As`
-  and handling the branches differently
-- if the error is recoverable,
-  logging the error and degrading gracefully
-- if the error represents a domain-specific failure condition,
-  returning a well-defined error
-- returning the error, either [wrapped](#error-wrapping) or verbatim
+- если контракт вызываемого абонента определяет конкретные ошибки,
+  сопоставьте ошибку с "errors.Is`или`errors.As"
+  и обработайте ветви по-разному
+- если ошибка исправима,
+  зарегистрируйте ошибку и исправьте ее корректно
+- если ошибка представляет собой сбой, связанный с конкретным доменом,
+  возвращает четко определенную ошибку
+- возвращает ошибку, либо [завернутую](#%D0%BF%D0%B5%D1%80%D0%B5%D0%BD%D0%BE%D1%81-%D0%BE%D1%88%D0%B8%D0%B1%D0%BE%D0%BA), либо дословно
 
-Regardless of how the caller handles the error,
-it should typically handle each error only once.
-The caller should not, for example, log the error and then return it,
-because *its* callers may handle the error as well.
+Независимо от того, как вызывающий абонент обрабатывает ошибку,
+обычно он должен обрабатывать каждую ошибку только один раз.
+Вызывающий абонент не должен, например, регистрировать ошибку и затем возвращать ее,
+поскольку *его* вызывающие абоненты также могут обрабатывать ошибку.
 
-For example, consider the following cases:
+Например, рассмотрим следующие случаи:
 
 <table>
 <thead><tr><th>Description</th><th>Code</th></tr></thead>
 <tbody>
 <tr><td>
 
-**Bad**: Log the error and return it
+**Bad**: Зарегистрируйте ошибку и верните ее
 
-Callers further up the stack will likely take a similar action with the error.
-Doing so causing a lot of noise in the application logs for little value.
+Абоненты, находящиеся выше по стеку, скорее всего, предпримут аналогичные действия с ошибкой.
+Это приведет к появлению большого количества помех в журналах приложений, что не принесет никакой пользы.
 
 </td><td>
 
@@ -1065,11 +1065,11 @@ if err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Wrap the error and return it
+**Good**: Обработайте ошибку и верните ее обратно
 
-Callers further up the stack will handle the error.
-Use of `%w` ensures they can match the error with `errors.Is` or `errors.As`
-if relevant.
+Вызывающие абоненты, расположенные выше по стеку, обработают ошибку.
+Использование "%w" гарантирует, что они смогут сопоставить ошибку с `errors.Is` или `errors.As"
+, если это уместно.
 
 </td><td>
 
@@ -1083,18 +1083,18 @@ if err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Log the error and degrade gracefully
+**Good**: Зарегистрируйте ошибку и исправьте ее должным образом
 
-If the operation isn't strictly necessary,
-we can provide a degraded but unbroken experience
-by recovering from it.
+Если операция не является строго необходимой,
+мы можем обеспечить исправление ошибки,
+но без сбоев, восстановив ее.
 
 </td><td>
 
 ```go
 if err := emitMetrics(); err != nil {
-  // Failure to write metrics should not
-  // break the application.
+	// Невозможность записи показателей 
+	// не должна приводить к прерыванию работы приложения.
   log.Printf("Could not emit metrics: %v", err)
 }
 
@@ -1103,14 +1103,14 @@ if err := emitMetrics(); err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Match the error and degrade gracefully
+**Good**: Сопоставьте ошибку и корректно устраните ее
 
-If the callee defines a specific error in its contract,
-and the failure is recoverable,
-match on that error case and degrade gracefully.
-For all other cases, wrap the error and return it.
+Если вызываемый объект определяет конкретную ошибку в своем контракте
+и сбой можно устранить,
+сопоставьте этот случай ошибки и корректно устраните его.
+Во всех остальных случаях завершите обработку ошибки и верните ее.
 
-Callers further up the stack will handle other errors.
+Вызывающие абоненты, находящиеся выше по стеку, будут обрабатывать другие ошибки.
 
 </td><td>
 
@@ -1118,7 +1118,7 @@ Callers further up the stack will handle other errors.
 tz, err := getUserTimeZone(id)
 if err != nil {
   if errors.Is(err, ErrUserNotFound) {
-    // User doesn't exist. Use UTC.
+    // Пользователь не существует. Используйте UTC.
     tz = time.UTC
   } else {
     return fmt.Errorf("get user %q: %w", id, err)
@@ -1129,10 +1129,10 @@ if err != nil {
 </td></tr>
 </tbody></table>
 
-### Handle Type Assertion Failures
+### Обработать ошибки при подтверждении типа
 
-The single return value form of a [type assertion](https://go.dev/ref/spec#Type_assertions) will panic on an incorrect
-type. Therefore, always use the "comma ok" idiom.
+Форма с единственным возвращаемым значением [утверждение типа](https://go.dev/ref/spec#Type_assertions) будет запаниковывать при вводе неправильного
+типа. Поэтому всегда используйте идиому "запятая в порядке".
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1158,11 +1158,11 @@ if !ok {
 <!-- TODO: There are a few situations where the single assignment form is
 fine. -->
 
-### Don't Panic
+### Не паникуйте
 
-Code running in production must avoid panics. Panics are a major source of
-[cascading failures](https://en.wikipedia.org/wiki/Cascading_failure). If an error occurs, the function must return an error and
-allow the caller to decide how to handle it.
+Код, запущенный в рабочей среде, должен избегать паники. Паника является основным источником
+[каскадных сбоев]. При возникновении ошибки функция должна вернуть сообщение об ошибке и
+позволить вызывающей стороне решить, как с этим справиться.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1204,17 +1204,17 @@ func main() {
 </td></tr>
 </tbody></table>
 
-Panic/recover is not an error handling strategy. A program must panic only when
-something irrecoverable happens such as a nil dereference. An exception to this is
-program initialization: bad things at program startup that should abort the
-program may cause panic.
+Panic/recovery не является стратегией обработки ошибок. Программа должна паниковать только тогда, когда
+происходит что-то непоправимое, например, нулевое разыменование. Исключением из этого правила является
+инициализация программы: сбои при запуске программы, которые должны привести к прерыванию работы
+программы, могут вызвать панику.
 
 ```go
 var _statusTemplate = template.Must(template.New("name").Parse("_statusHTML"))
 ```
 
-Even in tests, prefer `t.Fatal` or `t.FailNow` over panics to ensure that the
-test is marked as failed.
+Даже в тестах отдавайте предпочтение `t.Fatal` или `t.FailNow`, а не `panics`, чтобы убедиться, что
+тест помечен как неудачный.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1244,14 +1244,14 @@ if err != nil {
 </td></tr>
 </tbody></table>
 
-### Use go.uber.org/atomic
+### Используй go.uber.org/atomic
 
-Atomic operations with the [sync/atomic](https://pkg.go.dev/sync/atomic) package operate on the raw types
-(`int32`, `int64`, etc.) so it is easy to forget to use the atomic operation to
-read or modify the variables.
+Атомарные операции с пакетом [sync/atomic](https://pkg.go.dev/sync/atomic) работают с необработанными типами
+(`int32`, `int64` и т.д.), поэтому легко забыть использовать атомарную операцию для
+чтения или изменения переменных.
 
-[go.uber.org/atomic](https://pkg.go.dev/go.uber.org/atomic) adds type safety to these operations by hiding the
-underlying type. Additionally, it includes a convenient `atomic.Bool` type.
+[go.uber.org/atomic](https://pkg.go.dev/go.uber.org/atomic) повышает безопасность этих операций, скрывая
+базовый тип. Кроме того, он включает удобный тип `atomic.Bool`.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1299,10 +1299,10 @@ func (f *foo) isRunning() bool {
 </td></tr>
 </tbody></table>
 
-### Avoid Mutable Globals
+### Избегайте изменяемых глобальных переменных
 
-Avoid mutating global variables, instead opting for dependency injection.
-This applies to function pointers as well as other kinds of values.
+Избегайте изменения глобальных переменных, вместо этого выбирайте внедрение зависимостей.
+Это относится как к указателям на функции, так и к другим типам значений.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1376,26 +1376,26 @@ func TestSigner(t *testing.T) {
 </td></tr>
 </tbody></table>
 
-### Avoid Embedding Types in Public Structs
+### Избегайте встраивания типов в общедоступные структуры
 
-These embedded types leak implementation details, inhibit type evolution, and
-obscure documentation.
+Эти встроенные типы приводят к утечке информации о реализации, препятствуют эволюции типов и
+скрывают документацию.
 
-Assuming you have implemented a variety of list types using a shared
-`AbstractList`, avoid embedding the `AbstractList` in your concrete list
-implementations.
-Instead, hand-write only the methods to your concrete list that will delegate
-to the abstract list.
+Предполагая, что вы реализовали множество типов списков, используя общий
+"AbstractList", избегайте встраивания "AbstractList" в ваши конкретные
+реализации списков.
+Вместо этого от руки запишите в свой конкретный список только те методы, которые будут делегированы
+абстрактному списку.
 
 ```go
 type AbstractList struct {}
 
-// Add adds an entity to the list.
+// Add добавляет объект в список.
 func (l *AbstractList) Add(e Entity) {
   // ...
 }
 
-// Remove removes an entity from the list.
+// Remove удаляет объект из списка.
 func (l *AbstractList) Remove(e Entity) {
   // ...
 }
@@ -1407,7 +1407,7 @@ func (l *AbstractList) Remove(e Entity) {
 <tr><td>
 
 ```go
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   *AbstractList
 }
@@ -1416,17 +1416,17 @@ type ConcreteList struct {
 </td><td>
 
 ```go
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   list *AbstractList
 }
 
-// Add adds an entity to the list.
+// Add добавляет объект в список.
 func (l *ConcreteList) Add(e Entity) {
   l.list.Add(e)
 }
 
-// Remove removes an entity from the list.
+// Remove удаляет объект из списка.
 func (l *ConcreteList) Remove(e Entity) {
   l.list.Remove(e)
 }
@@ -1435,22 +1435,22 @@ func (l *ConcreteList) Remove(e Entity) {
 </td></tr>
 </tbody></table>
 
-Go allows [type embedding](https://go.dev/doc/effective_go#embedding) as a compromise between inheritance and composition.
-The outer type gets implicit copies of the embedded type's methods.
-These methods, by default, delegate to the same method of the embedded
-instance.
+Go допускает [type embedding](https://go.dev/doc/effective_go#embedding) в качестве компромисса между наследованием и композицией.
+Внешний тип получает неявные копии методов встроенного типа.
+Эти методы по умолчанию делегируются тому же методу встроенного
+экземпляра.
 
-The struct also gains a field by the same name as the type.
-So, if the embedded type is public, the field is public.
-To maintain backward compatibility, every future version of the outer type must
-keep the embedded type.
+Структура также получает поле с тем же именем, что и тип.
+Таким образом, если встроенный тип является общедоступным, то и поле будет общедоступным.
+Для обеспечения обратной совместимости каждая будущая версия внешнего типа должна
+сохранять встроенный тип.
 
-An embedded type is rarely necessary.
-It is a convenience that helps you avoid writing tedious delegate methods.
+Встроенный тип редко бывает необходим.
+Это удобство, которое помогает вам избежать написания утомительных методов делегирования.
 
-Even embedding a compatible AbstractList *interface*, instead of the struct,
-would offer the developer more flexibility to change in the future, but still
-leak the detail that the concrete lists use an abstract implementation.
+Даже внедрение совместимого интерфейса AbstractList *interface* вместо struct
+предоставило бы разработчику больше гибкости для внесения изменений в будущем, но все равно
+привело бы к утечке информации о том, что конкретные списки используют абстрактную реализацию.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1458,14 +1458,14 @@ leak the detail that the concrete lists use an abstract implementation.
 <tr><td>
 
 ```go
-// AbstractList is a generalized implementation
-// for various kinds of lists of entities.
+// AbstractList - это обобщенная реализация
+// для различных видов списков сущностей.
 type AbstractList interface {
   Add(Entity)
   Remove(Entity)
 }
 
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   AbstractList
 }
@@ -1493,29 +1493,29 @@ func (l *ConcreteList) Remove(e Entity) {
 </td></tr>
 </tbody></table>
 
-Either with an embedded struct or an embedded interface, the embedded type
-places limits on the evolution of the type.
+Как во встроенной структуре, так и во встроенном интерфейсе встроенный тип
+накладывает ограничения на эволюцию типа.
 
-- Adding methods to an embedded interface is a breaking change.
-- Removing methods from an embedded struct is a breaking change.
-- Removing the embedded type is a breaking change.
-- Replacing the embedded type, even with an alternative that satisfies the same
-  interface, is a breaking change.
+- Добавление методов во встроенный интерфейс является кардинальным изменением.
+- Удаление методов из встроенной структуры является кардинальным изменением.
+- Удаление встроенного типа является кардинальным изменением.
+- Замена встроенного типа даже на альтернативный, удовлетворяющий тем же требованиям.
+  интерфейс - это кардинальное изменение.
 
-Although writing these delegate methods is tedious, the additional effort hides
-an implementation detail, leaves more opportunities for change, and also
-eliminates indirection for discovering the full List interface in
-documentation.
+Хотя написание этих методов делегирования является утомительным занятием, дополнительные усилия скрывают
+детали реализации, оставляют больше возможностей для изменений, а также
+устраняет косвенные ссылки для поиска полного интерфейса списка в
+документации.
 
-### Avoid Using Built-In Names
+### Избегайте использования встроенных имен
 
-The Go [language specification](https://go.dev/ref/spec) outlines several built-in,
-[predeclared identifiers](https://go.dev/ref/spec#Predeclared_identifiers) that should not be used as names within Go programs.
+В [языковой спецификации Go] описаны несколько встроенных
+[предопределенных идентификаторов], которые не следует использовать в качестве имен в программах Go.
 
-Depending on context, reusing these identifiers as names will either shadow
-the original within the current lexical scope (and any nested scopes) or make
-affected code confusing. In the best case, the compiler will complain; in the
-worst case, such code may introduce latent, hard-to-grep bugs.
+В зависимости от контекста повторное использование этих идентификаторов в качестве имен либо затеняет
+оригинал в текущей лексической области (и любых вложенных областях), либо
+приводит к путанице в коде. В лучшем случае компилятор будет жаловаться; в
+худшем случае такой код может содержать скрытые, трудно поддающиеся исправлению ошибки.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1598,26 +1598,26 @@ Note that the compiler will not generate errors when using predeclared
 identifiers, but tools such as `go vet` should correctly point out these and
 other cases of shadowing.
 
-### Avoid `init()`
+### Избегайте `init()`
 
-Avoid `init()` where possible. When `init()` is unavoidable or desirable, code
-should attempt to:
+По возможности избегайте `init()`. Когда `init()` неизбежен или желателен, код
+должен попытаться это сделать:
 
-1. Be completely deterministic, regardless of program environment or invocation.
-2. Avoid depending on the ordering or side-effects of other `init()` functions.
-   While `init()` ordering is well-known, code can change, and thus
-   relationships between `init()` functions can make code brittle and
-   error-prone.
-3. Avoid accessing or manipulating global or environment state, such as machine
-   information, environment variables, working directory, program
-   arguments/inputs, etc.
-4. Avoid I/O, including both filesystem, network, and system calls.
+1. Быть полностью детерминированным, независимо от программной среды или вызова.
+2. Избегайте зависимости от порядка выполнения или побочных эффектов других функций init().
+   Хотя порядок выполнения init() хорошо известен, код может меняться, и, следовательно,
+   взаимосвязи между функциями init() могут сделать код хрупким и
+   подверженным ошибкам.
+3. Избегайте доступа к глобальным данным или состоянию среды или манипулирования ими, таким как машинная
+   информация, переменные среды, рабочий каталог, программа
+   аргументы/входные данные и т.д.
+4. Избегайте операций ввода-вывода, включая вызовы файловой системы, сети и системные вызовы.
 
-Code that cannot satisfy these requirements likely belongs as a helper to be
-called as part of `main()` (or elsewhere in a program's lifecycle), or be
-written as part of `main()` itself. In particular, libraries that are intended
-to be used by other programs should take special care to be completely
-deterministic and not perform "init magic".
+Код, который не может удовлетворить этим требованиям, скорее всего, является вспомогательным и должен
+вызываться как часть функции main() (или где-либо еще в жизненном цикле программы) или быть
+написан как часть самой функции main(). В частности, библиотеки, предназначенные
+для использования другими программами, должны быть полностью
+детерминированными и не выполнять "магию инициализации".
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1645,7 +1645,7 @@ var _defaultFoo = Foo{
     // ...
 }
 
-// or, better, for testability:
+// или, что еще лучше, для удобства тестирования:
 
 var _defaultFoo = defaultFoo()
 
@@ -1667,7 +1667,7 @@ type Config struct {
 var _config Config
 
 func init() {
-    // Bad: based on current directory
+    // Bad: на основе текущего каталога
     cwd, _ := os.Getwd()
 
     // Bad: I/O
@@ -1705,21 +1705,22 @@ func loadConfig() Config {
 </td></tr>
 </tbody></table>
 
-Considering the above, some situations in which `init()` may be preferable or
-necessary might include:
+Учитывая вышесказанное, некоторые ситуации, в которых использование it() может быть предпочтительным или
+необходимым, могут включать в себя:
 
-- Complex expressions that cannot be represented as single assignments.
-- Pluggable hooks, such as `database/sql` dialects, encoding type registries, etc.
-- Optimizations to [Google Cloud Functions](https://cloud.google.com/functions/docs/bestpractices/tips#use_global_variables_to_reuse_objects_in_future_invocations) and other forms of deterministic
-  precomputation.
+- Сложные выражения, которые нельзя представить в виде отдельных назначений.
+- Подключаемые перехватчики, такие как диалекты базы данных/sql, реестры типов кодировок и т.д.
+- Оптимизация [облачных функций Google] и других форм детерминированных
+  предварительных вычислений.
 
-### Exit in Main
+### Завершите работу в главном меню
 
-Go programs use [`os.Exit`](https://pkg.go.dev/os#Exit) or [`log.Fatal*`](https://pkg.go.dev/log#Fatal) to exit immediately. (Panicking
-is not a good way to exit programs, please [don't panic](#dont-panic).)
+Для немедленного завершения работы в программах Go используйте [`os.Exit`](https://pkg.go.dev/os#Exit) или [`log.Fatal*`](https://pkg.go.dev/log#Fatal). (Паника
+- не лучший способ выхода из программ, пожалуйста, [не паникуйте](#%D0%BD%D0%B5-%D0%BF%D0%B0%D0%BD%D0%B8%D0%BA%D1%83%D0%B9%D1%82%D0%B5).)
+- 
 
-Call one of `os.Exit` or `log.Fatal*` **only in `main()`**. All other
-functions should return errors to signal failure.
+Вызовите одну из `os.Exit` или `log.Fatal*` **только в `main()`**. Все остальные
+функции должны возвращать ошибки, сигнализирующие о сбое.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1776,25 +1777,25 @@ func readFile(path string) (string, error) {
 </td></tr>
 </tbody></table>
 
-Rationale: Programs with multiple functions that exit present a few issues:
+Обоснование: Программы с несколькими функциями, которые завершают работу, создают несколько проблем:
 
-- Non-obvious control flow: Any function can exit the program so it becomes
-  difficult to reason about the control flow.
-- Difficult to test: A function that exits the program will also exit the test
-  calling it. This makes the function difficult to test and introduces risk of
-  skipping other tests that have not yet been run by `go test`.
-- Skipped cleanup: When a function exits the program, it skips function calls
-  enqueued with `defer` statements. This adds risk of skipping important
-  cleanup tasks.
+- Неочевидный поток управления: любая функция может завершить работу программы, поэтому становится
+  трудно разобраться в потоке управления.
+- Сложно протестировать: функция, которая завершает работу программы, также завершит тест
+  , вызывающий ее. Это затрудняет тестирование функции и создает риск
+  пропуска других тестов, которые еще не были запущены с помощью "go test".
+- Пропущенная очистка: когда функция выходит из программы, она пропускает вызовы функций
+  помещается в очередь с инструкциями `отложить`. Это увеличивает риск пропуска важных
+  задач по очистке.
 
-#### Exit Once
+#### Завершите работу один раз
 
-If possible, prefer to call `os.Exit` or `log.Fatal` **at most once** in your
-`main()`. If there are multiple error scenarios that halt program execution,
-put that logic under a separate function and return errors from it.
+Если возможно, предпочтите вызывать "os.Exit" или "log.Fatal" **не более одного раза ** в вашем
+`main()`. Если существует несколько сценариев возникновения ошибок, которые останавливают выполнение программы,
+выделите эту логику в отдельную функцию и возвращайте ошибки из нее.
 
-This has the effect of shortening your `main()` function and putting all key
-business logic into a separate, testable function.
+Это сокращает вашу функцию `main()` и помещает всю ключевую
+бизнес-логику в отдельную тестируемую функцию.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1817,8 +1818,8 @@ func main() {
   }
   defer f.Close()
 
-  // If we call log.Fatal after this line,
-  // f.Close will not be called.
+	// Если мы вызовем log.Fatal после этой строки,
+	// f.Close вызываться не будет.
 
   b, err := io.ReadAll(f)
   if err != nil {
@@ -1865,8 +1866,8 @@ func run() error {
 </td></tr>
 </tbody></table>
 
-The example above uses `log.Fatal`, but the guidance also applies to
-`os.Exit` or any library code that calls `os.Exit`.
+В приведенном выше примере используется `log.Fatal`, но это руководство также применимо к
+"os.Exit" или любому библиотечному коду, который вызывает "os.Exit`.
 
 ```go
 func main() {
@@ -1877,10 +1878,10 @@ func main() {
 }
 ```
 
-You may alter the signature of `run()` to fit your needs.
-For example, if your program must exit with specific exit codes for failures,
-`run()` may return the exit code instead of an error.
-This allows unit tests to verify this behavior directly as well.
+Вы можете изменить сигнатуру `run()` в соответствии с вашими потребностями.
+Например, если ваша программа должна завершать работу с определенными кодами завершения при сбоях,
+`run()` может возвращать код завершения вместо ошибки.
+Это позволяет модульным тестам также проверять это поведение напрямую.
 
 ```go
 func main() {
@@ -1892,24 +1893,24 @@ func run() (exitCode int) {
 }
 ```
 
-More generally, note that the `run()` function used in these examples
-is not intended to be prescriptive.
-There's flexibility in the name, signature, and setup of the `run()` function.
-Among other things, you may:
+В целом, обратите внимание, что функция `run()`, используемая в этих примерах
+, не является обязательной.
+В названии, подписи и настройках функции `run()` предусмотрена гибкость.
+Помимо прочего, вы можете:
 
-- accept unparsed command line arguments (e.g., `run(os.Args[1:])`)
-- parse command line arguments in `main()` and pass them onto `run`
-- use a custom error type to carry the exit code back to `main()`
-- put business logic in a different layer of abstraction from `package main`
+- принимать нераспечатанные аргументы командной строки (например, `run(os.Args[1:])`)
+- анализировать аргументы командной строки в `main()` и передавать их в `run`
+- используйте пользовательский тип ошибки, чтобы перенести код завершения обратно в "main()"
+- перенесите бизнес-логику на другой уровень абстракции, отличный от "package main"
 
-This guidance only requires that there's a single place in your `main()`
-responsible for actually exiting the process.
+Это руководство требует, чтобы в вашем "main()" было только одно место.
+ответственный за фактический выход из процесса.
 
-### Use field tags in marshaled structs
+### Используйте теги полей в упорядоченных структурах
 
-Any struct field that is marshaled into JSON, YAML,
-or other formats that support tag-based field naming
-should be annotated with the relevant tag.
+Любое структурное поле, которое преобразуется в JSON, YAML
+или другие форматы, поддерживающие именование полей на основе тегов,
+должно быть помечено соответствующим тегом.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -1934,7 +1935,7 @@ bytes, err := json.Marshal(Stock{
 type Stock struct {
   Price int    `json:"price"`
   Name  string `json:"name"`
-  // Safe to rename Name to Symbol.
+  // Безопасно переименовать имя в символ.
 }
 
 bytes, err := json.Marshal(Stock{
@@ -1946,37 +1947,37 @@ bytes, err := json.Marshal(Stock{
 </td></tr>
 </tbody></table>
 
-Rationale:
-The serialized form of the structure is a contract between different systems.
-Changes to the structure of the serialized form--including field names--break
-this contract. Specifying field names inside tags makes the contract explicit,
-and it guards against accidentally breaking the contract by refactoring or
-renaming fields.
+Обоснование:
+Сериализованная форма структуры представляет собой контракт между различными системами.
+Изменения в структуре сериализованной формы, включая названия полей, нарушают
+этот контракт. Указание имен полей внутри тегов делает контракт явным
+и защищает от случайного нарушения контракта путем рефакторинга или
+переименования полей.
 
-### Don't fire-and-forget goroutines
+### Не запускайте и не забывайте о подпрограммах
 
-Goroutines are lightweight, but they're not free:
-at minimum, they cost memory for their stack and CPU to be scheduled.
-While these costs are small for typical uses of goroutines,
-they can cause significant performance issues
-when spawned in large numbers without controlled lifetimes.
-Goroutines with unmanaged lifetimes can also cause other issues
-like preventing unused objects from being garbage collected
-and holding onto resources that are otherwise no longer used.
+Подпрограммы просты, но они не бесплатны:
+как минимум, они требуют памяти для своего стека и центрального процессора для планирования.
+Несмотря на то, что эти затраты невелики при обычном использовании подпрограмм,
+они могут вызвать значительные проблемы с производительностью
+при запуске в больших количествах без контролируемого времени жизни.
+Программы с неуправляемым временем жизни также могут вызывать другие проблемы
+, например, предотвращать сборку мусора для неиспользуемых объектов
+и сохранять ресурсы, которые в противном случае больше не используются.
 
-Therefore, do not leak goroutines in production code.
-Use [go.uber.org/goleak](https://pkg.go.dev/go.uber.org/goleak)
-to test for goroutine leaks inside packages that may spawn goroutines.
+Поэтому не допускайте утечки программ в рабочий код.
+Используйте [go.uber.org/goleak](https://pkg.go.dev/go.uber.org/goleak)
+для проверки на наличие утечек в программах внутри пакетов, которые могут вызывать такие программы.
 
-In general, every goroutine:
+В общем, каждая программа:
 
-- must have a predictable time at which it will stop running; or
-- there must be a way to signal to the goroutine that it should stop
+- должна иметь предсказуемое время, когда она перестанет выполняться; или
+- должен быть способ подать программе сигнал о том, что она должна остановиться
 
-In both cases, there must be a way code to block and wait for the goroutine to
-finish.
+В обоих случаях должен быть код для блокировки и ожидания
+завершения работы программы.
 
-For example:
+Например:
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2022,25 +2023,25 @@ close(stop)  // signal the goroutine to stop
 </td></tr>
 <tr><td>
 
-There's no way to stop this goroutine.
-This will run until the application exits.
+Остановить эту процедуру невозможно.
+Она будет выполняться до завершения работы приложения.
 
 </td><td>
 
-This goroutine can be stopped with `close(stop)`,
-and we can wait for it to exit with `<-done`.
+Эту подпрограмму можно остановить с помощью `закрыть (stop)`,
+и мы не можем ждать, пока она завершится с помощью `<-done`.
 
 </td></tr>
 </tbody></table>
 
-#### Wait for goroutines to exit
+#### Дождитесь завершения работы подпрограммы
 
-Given a goroutine spawned by the system,
-there must be a way to wait for the goroutine to exit.
-There are two popular ways to do this:
+Учитывая, что система запускает подпрограмму,
+должен быть способ дождаться завершения работы подпрограммы.
+Есть два популярных способа сделать это:
 
-- Use a `sync.WaitGroup`.
-  Do this if there are multiple goroutines that you want to wait for
+- Используйте `sync.WaitGroup`.
+  Сделайте это, если есть несколько подпрограмм, выполнения которых вы хотите дождаться
 
   ```go
   var wg sync.WaitGroup
@@ -2056,8 +2057,8 @@ There are two popular ways to do this:
   wg.Wait()
   ```
 
-- Add another `chan struct{}` that the goroutine closes when it's done.
-  Do this if there's only one goroutine.
+- Добавьте еще одну `chan struct{}`, которую программа закрывает по завершении работы.
+  Сделайте это, если есть только одна программа.
 
   ```go
   done := make(chan struct{})
@@ -2066,20 +2067,20 @@ There are two popular ways to do this:
     // ...
   }()
 
-  // To wait for the goroutine to finish:
+  // Дождаться завершения работы программы:
   <-done
   ```
 
-#### No goroutines in `init()`
+#### Никаких подпрограмм в `init()`
 
-`init()` functions should not spawn goroutines.
-See also [Avoid init()](#avoid-init).
+Функции `init()` не должны создавать подпрограммы.
+Смотрите также [Избегайте init()](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-init).
 
-If a package has need of a background goroutine,
-it must expose an object that is responsible for managing a goroutine's
-lifetime.
-The object must provide a method (`Close`, `Stop`, `Shutdown`, etc)
-that signals the background goroutine to stop, and waits for it to exit.
+Если пакету требуется фоновая подпрограмма,
+он должен предоставить доступ к объекту, который отвечает за управление временем
+жизни подпрограмм.
+Объект должен предоставлять метод (`Close`, `Stop`, `Shutdown`, и т.д.).
+это сигнализирует об остановке фоновой программы и ожидает ее завершения.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2121,8 +2122,8 @@ func (w *Worker) doWork() {
   }
 }
 
-// Shutdown tells the worker to stop
-// and waits until it has finished.
+// Shutdown приказывает работнику остановиться
+// и ждет, пока он не завершит работу.
 func (w *Worker) Shutdown() {
   close(w.stop)
   <-w.done
@@ -2132,29 +2133,29 @@ func (w *Worker) Shutdown() {
 </td></tr>
 <tr><td>
 
-Spawns a background goroutine unconditionally when the user exports this package.
-The user has no control over the goroutine or a means of stopping it.
+Запускает фоновую подпрограмму без каких-либо условий, когда пользователь экспортирует этот пакет.
+Пользователь не имеет никакого контроля над подпрограммой или средств ее остановки.
 
 </td><td>
 
-Spawns the worker only if the user requests it.
-Provides a means of shutting down the worker so that the user can free up
-resources used by the worker.
+Запускает worker только по запросу пользователя.
+Предоставляет средство завершения работы worker, чтобы пользователь мог освободить
+ресурсы, используемые worker.
 
-Note that you should use `WaitGroup`s if the worker manages multiple
-goroutines.
-See [Wait for goroutines to exit](#wait-for-goroutines-to-exit).
+Обратите внимание, что вам следует использовать "WaitGroup", если worker управляет несколькими
+подпрограммами.
+Смотрите [Дождитесь завершения выполнения подпрограммы](#%D0%B4%D0%BE%D0%B6%D0%B4%D0%B8%D1%82%D0%B5%D1%81%D1%8C-%D0%B7%D0%B0%D0%B2%D0%B5%D1%80%D1%88%D0%B5%D0%BD%D0%B8%D1%8F-%D1%80%D0%B0%D0%B1%D0%BE%D1%82%D1%8B-%D0%BF%D0%BE%D0%B4%D0%BF%D1%80%D0%BE%D0%B3%D1%80%D0%B0%D0%BC%D0%BC%D1%8B).
 
 </td></tr>
 </tbody></table>
 
-## Performance
+## Производительность
 
-Performance-specific guidelines apply only to the hot path.
+Рекомендации, касающиеся производительности, применимы только к горячему контуру.
 
-### Prefer strconv over fmt
+### Предпочитайте strconv, а не fmt
 
-When converting primitives to/from strings, `strconv` is faster than
+При преобразовании примитивов в строки и из них "strconv" работает быстрее, чем
 `fmt`.
 
 <table>
@@ -2192,10 +2193,10 @@ BenchmarkStrconv-4    64.2 ns/op    1 allocs/op
 </td></tr>
 </tbody></table>
 
-### Avoid repeated string-to-byte conversions
+### Избегайте повторных преобразований строк в байты
 
-Do not create byte slices from a fixed string repeatedly. Instead, perform the
-conversion once and capture the result.
+Не создавайте байтовые фрагменты из фиксированной строки повторно. Вместо этого выполните
+преобразование один раз и зафиксируйте результат.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2233,29 +2234,29 @@ BenchmarkGood-4  500000000   3.25 ns/op
 </td></tr>
 </tbody></table>
 
-### Prefer Specifying Container Capacity
+### Предпочтительнее указывать емкость контейнера
 
-Specify container capacity where possible in order to allocate memory for the
-container up front. This minimizes subsequent allocations (by copying and
-resizing of the container) as elements are added.
+По возможности указывайте емкость контейнера, чтобы заранее выделить память для
+контейнера. Это сводит к минимуму последующие выделения (путем копирования и
+изменения размера контейнера) по мере добавления элементов.
 
-#### Specifying Map Capacity Hints
+#### Указание емкости карты дает подсказки
 
-Where possible, provide capacity hints when initializing
-maps with `make()`.
+Там, где это возможно, указывайте емкость при инициализации
+карт с помощью `make()`.
 
 ```go
 make(map[T1]T2, hint)
 ```
 
-Providing a capacity hint to `make()` tries to right-size the
-map at initialization time, which reduces the need for growing
-the map and allocations as elements are added to the map.
+Предоставляя подсказку о емкости для `make()`, вы пытаетесь настроить правильный размер
+карты во время инициализации, что уменьшает необходимость в увеличении
+карты и распределении ресурсов по мере добавления элементов на карту.
 
-Note that, unlike slices, map capacity hints do not guarantee complete,
-preemptive allocation, but are used to approximate the number of hashmap buckets
-required. Consequently, allocations may still occur when adding elements to the
-map, even up to the specified capacity.
+Обратите внимание, что, в отличие от фрагментов, подсказки о емкости карты не гарантируют полного и
+упреждающего распределения, а используются для приблизительного определения количества требуемых сегментов
+хэш-карты. Следовательно, при добавлении элементов на карту все равно могут происходить перераспределения
+, даже до указанной емкости.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2286,31 +2287,31 @@ for _, f := range files {
 </td></tr>
 <tr><td>
 
-`m` is created without a size hint; there may be more
-allocations at assignment time.
+`m` создается без указания размера; во время назначения может быть выделено больше
+ресурсов.
 
 </td><td>
 
-`m` is created with a size hint; there may be fewer
-allocations at assignment time.
+`m` создается с указанием размера; во время назначения может быть выделено меньше
+ресурсов.
 
 </td></tr>
 </tbody></table>
 
-#### Specifying Slice Capacity
+#### Указание емкости среза
 
-Where possible, provide capacity hints when initializing slices with `make()`,
-particularly when appending.
+По возможности указывайте емкость при инициализации срезов с помощью "make()",
+особенно при добавлении.
 
 ```go
 make([]T, length, capacity)
 ```
 
-Unlike maps, slice capacity is not a hint: the compiler will allocate enough
-memory for the capacity of the slice as provided to `make()`, which means that
-subsequent `append()` operations will incur zero allocations (until the length
-of the slice matches the capacity, after which any appends will require a resize
-to hold additional elements).
+В отличие от maps, емкость фрагмента не является подсказкой: компилятор выделит достаточно
+памяти для емкости фрагмента, как указано в `make()`, что означает, что
+последующие операции `append()` не будут требовать выделения нулевого объема (до тех пор, пока длина
+фрагмента не будет соответствовать емкости, после чего любое добавление потребуется изменить размер
+для размещения дополнительных элементов).
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2353,41 +2354,41 @@ BenchmarkGood-4   100000000    0.21s
 </td></tr>
 </tbody></table>
 
-## Style
+## Стиль
 
-### Avoid overly long lines
+### Избегайте слишком длинных строк
 
-Avoid lines of code that require readers to scroll horizontally
-or turn their heads too much.
+Избегайте строк кода, которые требуют от читателей прокрутки по горизонтали
+или чрезмерного поворота головы.
 
-We recommend a soft line length limit of **99 characters**.
-Authors should aim to wrap lines before hitting this limit,
-but it is not a hard limit.
-Code is allowed to exceed this limit.
+Мы рекомендуем ограничивать длину строки не более чем **99 символами **.
+Авторам следует стремиться к завершению строк до достижения этого предела,
+но это не является жестким ограничением.
+Коду разрешено превышать этот предел.
 
-### Be Consistent
+### Будьте последовательны
 
-Some of the guidelines outlined in this document can be evaluated objectively;
-others are situational, contextual, or subjective.
+Некоторые рекомендации, изложенные в этом документе, можно оценить объективно;
+другие основаны на ситуации, контексте или субъективны.
 
-Above all else, **be consistent**.
+Прежде всего, ** будьте последовательны**.
 
-Consistent code is easier to maintain, is easier to rationalize, requires less
-cognitive overhead, and is easier to migrate or update as new conventions emerge
-or classes of bugs are fixed.
+Согласованный код проще в обслуживании, его легче рационализировать, он требует меньше
+когнитивных затрат и его легче переносить или обновлять по мере появления новых соглашений
+или исправления классов ошибок.
 
-Conversely, having multiple disparate or conflicting styles within a single
-codebase causes maintenance overhead, uncertainty, and cognitive dissonance,
-all of which can directly contribute to lower velocity, painful code reviews,
-and bugs.
+И наоборот, наличие нескольких разрозненных или конфликтующих стилей в рамках одной
+кодовой базы приводит к накладным расходам на обслуживание, неопределенности и когнитивному диссонансу,
+все это может напрямую способствовать снижению скорости работы, болезненным проверкам кода
+и появлению ошибок.
 
-When applying these guidelines to a codebase, it is recommended that changes
-are made at a package (or larger) level: application at a sub-package level
-violates the above concern by introducing multiple styles into the same code.
+При применении этих рекомендаций к кодовой базе рекомендуется вносить изменения
+на уровне пакета (или более крупного пакета): приложение на уровне подпакета
+нарушает вышеуказанное требование, вводя несколько стилей в один и тот же код.
 
-### Group Similar Declarations
+### Группировать похожие объявления
 
-Go supports grouping similar declarations.
+Go поддерживает группирование похожих объявлений.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2564,14 +2565,14 @@ func (c *client) request() {
 </td></tr>
 </tbody></table>
 
-### Import Group Ordering
+### Упорядочение групп импорта
 
-There should be two import groups:
+Должно быть две группы импорта:
 
-- Standard library
-- Everything else
+- Стандартная библиотека
+- Все остальное
 
-This is the grouping applied by goimports by default.
+Это группировка, применяемая goimports по умолчанию.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2602,30 +2603,30 @@ import (
 </td></tr>
 </tbody></table>
 
-### Package Names
+### Имена пакетов
 
-When naming packages, choose a name that is:
+При присвоении имен пакетам выбирайте такие имена, которые:
 
-- All lower-case. No capitals or underscores.
-- Does not need to be renamed using named imports at most call sites.
-- Short and succinct. Remember that the name is identified in full at every call
-  site.
-- Not plural. For example, `net/url`, not `net/urls`.
-- Not "common", "util", "shared", or "lib". These are bad, uninformative names.
+- Все в нижнем регистре. Без заглавных букв и подчеркиваний.
+- Не требует переименования с помощью именованного импорта на большинстве сайтов вызова.
+- Короткие и емкие. Помните, что имя указывается полностью на каждом
+  сайте вызова.
+- Не во множественном числе. Например, `net/url`, а не `net/urls`.
+- Не "common", "util", "shared" или "lib". Это неправильные, неинформативные названия.
 
-See also [Package Names](https://go.dev/blog/package-names) and [Style guideline for Go packages](https://rakyll.org/style-packages/).
+Смотрите также [Названия пакетов](https://go.dev/blog/package-names) и [Рекомендации по стилю для пакетов Go](https://rakyll.org/style-packages/).
 
-### Function Names
+### Имена функций
 
-We follow the Go community's convention of using [MixedCaps for function
-names](https://go.dev/doc/effective_go#mixed-caps). An exception is made for test functions, which may contain underscores
-for the purpose of grouping related test cases, e.g.,
+Мы придерживаемся принятого в сообществе Go правила использования [смешанных заглавных букв для
+имен функций]. Исключение сделано для тестовых функций, которые могут содержать символы подчеркивания
+с целью группировки связанных тестовых примеров, например,
 `TestMyFunction_WhatIsBeingTested`.
 
-### Import Aliasing
+### Сглаживание при импорте
 
-Import aliasing must be used if the package name does not match the last
-element of the import path.
+Сглаживание при импорте необходимо использовать, если имя пакета не совпадает с последним
+элементом пути импорта.
 
 ```go
 import (
@@ -2636,8 +2637,8 @@ import (
 )
 ```
 
-In all other scenarios, import aliases should be avoided unless there is a
-direct conflict between imports.
+Во всех других сценариях следует избегать использования псевдонимов импорта, если
+только между импортируемыми данными нет прямого конфликта.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2669,19 +2670,19 @@ import (
 </td></tr>
 </tbody></table>
 
-### Function Grouping and Ordering
+### Группировка и упорядочение функций
 
-- Functions should be sorted in rough call order.
-- Functions in a file should be grouped by receiver.
+- Функции должны быть отсортированы в приблизительном порядке вызова.
+- Функции в файле должны быть сгруппированы по получателю.
 
-Therefore, exported functions should appear first in a file, after
-`struct`, `const`, `var` definitions.
+Поэтому экспортируемые функции должны отображаться в файле первыми, после
+определений `struct`, `const`, `var`.
 
-A `newXYZ()`/`NewXYZ()` may appear after the type is defined, but before the
-rest of the methods on the receiver.
+`new XYZ()`/`NewXYZ()` может появиться после определения типа, но перед
+остальными методами в получателе.
 
-Since functions are grouped by receiver, plain utility functions should appear
-towards the end of the file.
+Поскольку функции сгруппированы по получателю, простые служебные функции должны отображаться
+ближе к концу файла.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2725,11 +2726,11 @@ func calcCost(n []int) int {...}
 </td></tr>
 </tbody></table>
 
-### Reduce Nesting
+### Уменьшить вложенность
 
-Code should reduce nesting where possible by handling error cases/special
-conditions first and returning early or continuing the loop. Reduce the amount
-of code that is nested multiple levels.
+Код должен по возможности уменьшать вложенность, сначала обрабатывая случаи ошибок/ особые
+условия и возвращая их на ранней стадии или продолжая цикл. Уменьшите объем
+кода, который вложен на нескольких уровнях.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2771,10 +2772,10 @@ for _, v := range data {
 </td></tr>
 </tbody></table>
 
-### Unnecessary Else
+### Необязательный элемент Else
 
-If a variable is set in both branches of an if, it can be replaced with a
-single if.
+Если переменная задана в обеих ветвях if, ее можно заменить на
+один if.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2802,10 +2803,10 @@ if b {
 </td></tr>
 </tbody></table>
 
-### Top-level Variable Declarations
+### Объявления переменных верхнего уровня
 
-At the top level, use the standard `var` keyword. Do not specify the type,
-unless it is not the same type as the expression.
+На верхнем уровне используйте стандартное ключевое слово `var`. Не указывайте тип,
+если только он не совпадает с типом выражения.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2822,8 +2823,8 @@ func F() string { return "A" }
 
 ```go
 var _s = F()
-// Since F already states that it returns a string, we don't need to specify
-// the type again.
+// Поскольку F уже указывает, что возвращает строку, 
+// нам не нужно снова указывать тип.
 
 func F() string { return "A" }
 ```
@@ -2831,8 +2832,7 @@ func F() string { return "A" }
 </td></tr>
 </tbody></table>
 
-Specify the type if the type of the expression does not match the desired type
-exactly.
+Укажите тип, если тип выражения не совсем соответствует требуемому типу.
 
 ```go
 type myError struct{}
@@ -2842,17 +2842,17 @@ func (myError) Error() string { return "error" }
 func F() myError { return myError{} }
 
 var _e error = F()
-// F returns an object of type myError but we want error.
+// F возвращает объект типа MyError, но нам нужна ошибка.
 ```
 
-### Prefix Unexported Globals with _
+### Добавляйте к неэкспортируемым глобальным символам префикс _
 
-Prefix unexported top-level `var`s and `const`s with `_` to make it clear when
-they are used that they are global symbols.
+Добавляйте к неэкспортируемым символам верхнего уровня "var" и "const" префикс "_", чтобы при
+их использовании было ясно, что они являются глобальными символами.
 
-Rationale: Top-level variables and constants have a package scope. Using a
-generic name makes it easy to accidentally use the wrong value in a different
-file.
+Обоснование: Переменные и константы верхнего уровня имеют область действия пакета. Использование
+общего имени позволяет легко случайно использовать неправильное значение в другом
+файле.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2893,14 +2893,13 @@ const (
 </td></tr>
 </tbody></table>
 
-**Exception**: Unexported error values may use the prefix `err` without the underscore.
-See [Error Naming](#error-naming).
+**Исключение**: В неэкспортированных значениях ошибок может использоваться префикс `err` без подчеркивания.
+Смотрите [Наименование ошибки](#%D0%BF%D1%80%D0%B8%D1%81%D0%B2%D0%BE%D0%B5%D0%BD%D0%B8%D0%B5-%D0%B8%D0%BC%D0%B5%D0%BD-%D0%BE%D1%88%D0%B8%D0%B1%D0%BA%D0%B0%D0%BC).
 
-### Embedding in Structs
+### # Встраивание в структуры
 
-Embedded types should be at the top of the field list of a
-struct, and there must be an empty line separating embedded fields from regular
-fields.
+Встроенные типы должны располагаться в верхней части списка полей
+структуры, и должна быть пустая строка, отделяющая встроенные поля от обычных.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2927,33 +2926,33 @@ type Client struct {
 </td></tr>
 </tbody></table>
 
-Embedding should provide tangible benefit, like adding or augmenting
-functionality in a semantically-appropriate way. It should do this with zero
-adverse user-facing effects (see also: [Avoid Embedding Types in Public Structs](#avoid-embedding-types-in-public-structs)).
+Внедрение должно приносить ощутимую пользу, например, добавлять или расширять
+функциональность семантически приемлемым способом. Это должно происходить с нулевым
+негативным воздействием на пользователя (см. также: [Избегайте внедрения типов в общедоступные структуры](#%D0%B8%D0%B7%D0%B1%D0%B5%D0%B3%D0%B0%D0%B9%D1%82%D0%B5-%D0%B2%D1%81%D1%82%D1%80%D0%B0%D0%B8%D0%B2%D0%B0%D0%BD%D0%B8%D1%8F-%D1%82%D0%B8%D0%BF%D0%BE%D0%B2-%D0%B2-%D0%BE%D0%B1%D1%89%D0%B5%D0%B4%D0%BE%D1%81%D1%82%D1%83%D0%BF%D0%BD%D1%8B%D0%B5-%D1%81%D1%82%D1%80%D1%83%D0%BA%D1%82%D1%83%D1%80%D1%8B)).
 
-Exception: Mutexes should not be embedded, even on unexported types. See also: [Zero-value Mutexes are Valid](#zero-value-mutexes-are-valid).
+Исключение: Мьютексы не должны встраиваться даже в неэкспортируемые типы. Смотрите также: [Допустимы мьютексы с нулевым значением](#%D0%B4%D0%BE%D0%BF%D1%83%D1%81%D1%82%D0%B8%D0%BC%D1%8B-%D0%BC%D1%8C%D1%8E%D1%82%D0%B5%D0%BA%D1%81%D1%8B-%D1%81-%D0%BD%D1%83%D0%BB%D0%B5%D0%B2%D1%8B%D0%BC-%D0%B7%D0%BD%D0%B0%D1%87%D0%B5%D0%BD%D0%B8%D0%B5%D0%BC).
 
-Embedding **should not**:
+Встраивание ** не должно быть**:
 
-- Be purely cosmetic or convenience-oriented.
-- Make outer types more difficult to construct or use.
-- Affect outer types' zero values. If the outer type has a useful zero value, it
-  should still have a useful zero value after embedding the inner type.
-- Expose unrelated functions or fields from the outer type as a side-effect of
-  embedding the inner type.
-- Expose unexported types.
-- Affect outer types' copy semantics.
-- Change the outer type's API or type semantics.
-- Embed a non-canonical form of the inner type.
-- Expose implementation details of the outer type.
-- Allow users to observe or control type internals.
-- Change the general behavior of inner functions through wrapping in a way that
-  would reasonably surprise users.
+- чисто косметическим или ориентированным на удобство.
+- Усложняет создание или использование внешних типов.
+- Влияет на нулевые значения внешних типов. Если внешний тип имеет полезное нулевое значение, он
+  после внедрения внутреннего типа все равно должно быть полезное нулевое значение.
+- Отображение несвязанных функций или полей из внешнего типа в качестве побочного эффекта
+  внедрения внутреннего типа.
+- Отображение неэкспортированных типов.
+- Изменение семантики копирования внешних типов.
+- Измените API внешнего типа или семантику типа.
+- Внедрите неканоническую форму внутреннего типа.
+- Предоставьте подробную информацию о реализации внешнего типа.
+- Разрешите пользователям наблюдать за внутренними элементами типа или управлять ими.
+- Измените общее поведение внутренних функций, обернув их таким образом, чтобы это
+  могло приятно удивить пользователей.
 
-Simply put, embed consciously and intentionally. A good litmus test is, "would
-all of these exported inner methods/fields be added directly to the outer type";
-if the answer is "some" or "no", don't embed the inner type - use a field
-instead.
+Проще говоря, внедряйте сознательно и преднамеренно. Хороший тест на лакмусовую бумажку заключается в следующем: "будут
+ли все эти экспортированные внутренние методы/поля добавлены непосредственно во внешний тип".;
+если ответ "какой-то" или "нет", не вводите внутренний тип - используйте
+вместо него поле.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -2962,11 +2961,11 @@ instead.
 
 ```go
 type A struct {
-    // Bad: A.Lock() and A.Unlock() are
-    //      now available, provide no
-    //      functional benefit, and allow
-    //      users to control details about
-    //      the internals of A.
+    // Ошибка: функции A.Lock() и A.Unlock()
+    // доступны в настоящее время, не предоставляют
+    // функциональных преимуществ и позволяют
+    // пользователям управлять подробностями о
+    // внутреннем устройстве A.
     sync.Mutex
 }
 ```
@@ -2975,10 +2974,10 @@ type A struct {
 
 ```go
 type countingWriteCloser struct {
-    // Good: Write() is provided at this
-    //       outer layer for a specific
-    //       purpose, and delegates work
-    //       to the inner type's Write().
+    // Хорошо: функция Write() предусмотрена на этом
+    // внешнем уровне для определенной
+    // цели и делегирует работу
+    // функции Write() внутреннего типа.
     io.WriteCloser
 
     count int
@@ -2995,7 +2994,7 @@ func (w *countingWriteCloser) Write(bs []byte) (int, error) {
 
 ```go
 type Book struct {
-    // Bad: pointer changes zero value usefulness
+    // Bad: указатель изменяет полезность нулевого значения
     io.ReadWriter
 
     // other fields
@@ -3013,7 +3012,7 @@ b.Write(...) // panic: nil pointer
 
 ```go
 type Book struct {
-    // Good: has useful zero value
+    // Good: имеет полезное нулевое значение
     bytes.Buffer
 
     // other fields
@@ -3053,10 +3052,10 @@ type Client struct {
 </td></tr>
 </tbody></table>
 
-### Local Variable Declarations
+### Объявления локальных переменных
 
-Short variable declarations (`:=`) should be used if a variable is being set to
-some value explicitly.
+Короткие объявления переменных (`:=`) следует использовать, если переменной явно присваивается
+какое-либо значение.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3076,8 +3075,8 @@ s := "foo"
 </td></tr>
 </tbody></table>
 
-However, there are cases where the default value is clearer when the `var`
-keyword is used. [Declaring Empty Slices](https://go.dev/wiki/CodeReviewComments#declaring-empty-slices), for example.
+Однако в некоторых случаях значение по умолчанию становится более понятным, когда
+используется ключевое слово `var`. Например, [Объявление пустых Slices].
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3111,12 +3110,12 @@ func f(list []int) {
 </td></tr>
 </tbody></table>
 
-### nil is a valid slice
+### nil - допустимый фрагмент
 
-`nil` is a valid slice of length 0. This means that,
+`nil` - допустимый фрагмент длиной 0. Это означает, что,
 
-- You should not return a slice of length zero explicitly. Return `nil`
-  instead.
+- Вы не должны возвращать фрагмент нулевой длины явно. Возвращайте `nil`
+  вместо.
 
   <table>
   <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3140,7 +3139,7 @@ func f(list []int) {
   </td></tr>
   </tbody></table>
 
-- To check if a slice is empty, always use `len(s) == 0`. Do not check for
+- Чтобы проверить, пуст ли фрагмент, всегда используйте `len(s) == 0`. Не проверяйте наличие
   `nil`.
 
   <table>
@@ -3165,7 +3164,7 @@ func f(list []int) {
   </td></tr>
   </tbody></table>
 
-- The zero value (a slice declared with `var`) is usable immediately without
+- Нулевое значение (фрагмент, объявленный с помощью `var`) можно использовать немедленно без использования
   `make()`.
 
   <table>
@@ -3203,14 +3202,14 @@ func f(list []int) {
   </td></tr>
   </tbody></table>
 
-Remember that, while it is a valid slice, a nil slice is not equivalent to an
-allocated slice of length 0 - one is nil and the other is not - and the two may
-be treated differently in different situations (such as serialization).
+Помните, что, хотя это допустимый фрагмент, нулевой фрагмент не эквивалентен
+выделенному фрагменту длиной 0 - один из них равен нулю, а другой - нет, - и в разных
+ситуациях (например, при сериализации) они могут обрабатываться по-разному.
 
-### Reduce Scope of Variables
+### Уменьшите область видимости переменных
 
-Where possible, reduce scope of variables and constants. Do not reduce the scope if it
-conflicts with [Reduce Nesting](#reduce-nesting).
+По возможности уменьшите область видимости переменных и констант. Не уменьшайте область видимости, если это
+противоречит [Уменьшить вложенность](#%D1%83%D0%BC%D0%B5%D0%BD%D1%8C%D1%88%D0%B8%D1%82%D1%8C-%D0%B2%D0%BB%D0%BE%D0%B6%D0%B5%D0%BD%D0%BD%D0%BE%D1%81%D1%82%D1%8C).
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3235,8 +3234,8 @@ if err := os.WriteFile(name, data, 0644); err != nil {
 </td></tr>
 </tbody></table>
 
-If you need a result of a function call outside of the if, then you should not
-try to reduce the scope.
+Если вам нужен результат вызова функции за пределами if, то вам не следует
+пытаться уменьшить область видимости.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3276,8 +3275,8 @@ return nil
 </td></tr>
 </tbody></table>
 
-Constants do not need to be global unless they are used in multiple functions or files
-or are part of an external contract of the package.
+Константы не обязательно должны быть глобальными, если только они не используются в нескольких функциях или файлах
+или не являются частью внешнего контракта пакета.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3310,10 +3309,10 @@ func Bar() {
 </td></tr>
 </tbody></table>
 
-### Avoid Naked Parameters
+### Избегайте открытых параметров
 
-Naked parameters in function calls can hurt readability. Add C-style comments
-(`/* ... */`) for parameter names when their meaning is not obvious.
+Именованные параметры в вызовах функций могут ухудшить читаемость. Добавляйте комментарии в стиле Си
+(`/* ... */`) для имен параметров, если их значение неочевидно.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3337,9 +3336,8 @@ printInfo("foo", true /* isLocal */, true /* done */)
 </td></tr>
 </tbody></table>
 
-Better yet, replace naked `bool` types with custom types for more readable and
-type-safe code. This allows more than just two states (true/false) for that
-parameter in the future.
+А еще лучше, замените обычные типы `bool` пользовательскими типами для более удобочитаемого и
+типобезопасного кода. В будущем для этого параметра будет разрешено не только два состояния (true/false).
 
 ```go
 type Region int
@@ -3354,17 +3352,17 @@ type Status int
 const (
   StatusReady Status = iota + 1
   StatusDone
-  // Maybe we will have a StatusInProgress in the future.
+  // // Возможно, в будущем у нас будет статус InProgress.
 )
 
 func printInfo(name string, region Region, status Status)
 ```
 
-### Use Raw String Literals to Avoid Escaping
+### Используйте необработанные строковые литералы, чтобы избежать экранирования
 
-Go supports [raw string literals](https://go.dev/ref/spec#raw_string_lit),
-which can span multiple lines and include quotes. Use these to avoid
-hand-escaped strings which are much harder to read.
+Go поддерживает [необработанные строковые литералы](https://go.dev/ref/spec#raw_string_lit),
+которые могут занимать несколько строк и включать кавычки. Используйте их, чтобы избежать
+ручного экранирования строк, которые намного сложнее читать.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3384,12 +3382,12 @@ wantError := `unknown error:"test"`
 </td></tr>
 </tbody></table>
 
-### Initializing Structs
+### Инициализация структур
 
-#### Use Field Names to Initialize Structs
+#### Используйте имена полей для инициализации структур
 
-You should almost always specify field names when initializing structs. This is
-now enforced by [`go vet`](https://pkg.go.dev/cmd/vet).
+При инициализации структур почти всегда следует указывать имена полей.
+Теперь это поддерживается [`go vet`](https://pkg.go.dev/cmd/vet).
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3413,8 +3411,8 @@ k := User{
 </td></tr>
 </tbody></table>
 
-Exception: Field names *may* be omitted in test tables when there are 3 or
-fewer fields.
+Исключение: Имена полей *могут* быть опущены в тестовых таблицах, если имеется 3 или
+менее полей.
 
 ```go
 tests := []struct{
@@ -3426,11 +3424,11 @@ tests := []struct{
 }
 ```
 
-#### Omit Zero Value Fields in Structs
+#### Опустите поля с нулевыми значениями в структурах
 
-When initializing structs with field names, omit fields that have zero values
-unless they provide meaningful context. Otherwise, let Go set these to zero
-values automatically.
+При инициализации структур с именами полей опускайте поля с нулевыми значениями,
+если только они не содержат значимого контекста. В противном случае let Go автоматически установит для них нулевые
+значения.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3458,12 +3456,12 @@ user := User{
 </td></tr>
 </tbody></table>
 
-This helps reduce noise for readers by omitting values that are default in
-that context. Only meaningful values are specified.
+Это помогает уменьшить помехи для считывателей, опуская значения, которые используются по умолчанию в
+данном контексте. Указываются только значимые значения.
 
-Include zero values where field names provide meaningful context. For example,
-test cases in [Test Tables](#test-tables) can benefit from names of fields
-even when they are zero-valued.
+Включайте нулевые значения там, где имена полей обеспечивают значимый контекст. Например,
+тестовые примеры в [Тестовых таблицах](#%D1%82%D0%B5%D1%81%D1%82%D0%BE%D0%B2%D1%8B%D0%B5-%D1%82%D0%B0%D0%B1%D0%BB%D0%B8%D1%86%D1%8B) могут использовать названия полей
+, даже если они имеют нулевое значение.
 
 ```go
 tests := []struct{
@@ -3475,10 +3473,10 @@ tests := []struct{
 }
 ```
 
-#### Use `var` for Zero Value Structs
+#### Используйте `var` для структур с нулевым значением
 
-When all the fields of a struct are omitted in a declaration, use the `var`
-form to declare the struct.
+Если в объявлении структуры опущены все поля, используйте форму `var`
+для объявления структуры.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3498,14 +3496,14 @@ var user User
 </td></tr>
 </tbody></table>
 
-This differentiates zero valued structs from those with non-zero fields
-similar to the distinction created for [map initialization](#initializing-maps), and matches how
-we prefer to [declare empty slices](https://go.dev/wiki/CodeReviewComments#declaring-empty-slices).
+Это отличает структуры с нулевым значением от структур с ненулевыми полями,
+аналогично различию, созданному для [инициализации карты](#%D0%B8%D0%BD%D0%B8%D1%86%D0%B8%D0%B0%D0%BB%D0%B8%D0%B7%D0%B0%D1%86%D0%B8%D1%8F-%D0%BA%D0%B0%D1%80%D1%82), и соответствует тому, как
+мы предпочитаем [объявлять пустые фрагменты](https://go.dev/wiki/CodeReviewComments#declaring-empty-slices).
 
-#### Initializing Struct References
+#### Инициализация ссылок на структуры
 
-Use `&T{}` instead of `new(T)` when initializing struct references so that it
-is consistent with the struct initialization.
+Используйте `&T{}` вместо `new(T)` при инициализации ссылок на структуры, чтобы это
+соответствовало инициализации структуры.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3515,7 +3513,7 @@ is consistent with the struct initialization.
 ```go
 sval := T{Name: "foo"}
 
-// inconsistent
+// несоответствующий
 sptr := new(T)
 sptr.Name = "bar"
 ```
@@ -3531,12 +3529,12 @@ sptr := &T{Name: "bar"}
 </td></tr>
 </tbody></table>
 
-### Initializing Maps
+### Инициализация карт
 
-Prefer `make(..)` for empty maps, and maps populated
-programmatically. This makes map initialization visually
-distinct from declaration, and it makes it easy to add size
-hints later if available.
+Для пустых карт и карт, заполняемых программным путем, предпочтительнее использовать "make(..)"
+. Это визуально отличает инициализацию карты
+от объявления и упрощает добавление
+подсказок по размеру позже, если таковые имеются.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3545,8 +3543,8 @@ hints later if available.
 
 ```go
 var (
-  // m1 is safe to read and write;
-  // m2 will panic on writes.
+  // m1 безопасен для чтения и записи;
+  // m2 будет паниковать при записи.
   m1 = map[T1]T2{}
   m2 map[T1]T2
 )
@@ -3556,8 +3554,8 @@ var (
 
 ```go
 var (
-  // m1 is safe to read and write;
-  // m2 will panic on writes.
+  // m1 безопасен для чтения и записи;
+  // m2 будет паниковать при записи.
   m1 = make(map[T1]T2)
   m2 map[T1]T2
 )
@@ -3566,22 +3564,22 @@ var (
 </td></tr>
 <tr><td>
 
-Declaration and initialization are visually similar.
+Объявление и инициализация визуально схожи.
 
 </td><td>
 
-Declaration and initialization are visually distinct.
+Объявление и инициализация визуально различаются.
 
 </td></tr>
 </tbody></table>
 
-Where possible, provide capacity hints when initializing
-maps with `make()`. See
-[Specifying Map Capacity Hints](#specifying-map-capacity-hints)
-for more information.
+Там, где это возможно, указывайте емкость при инициализации
+карт с помощью `make()`. Видеть
+[Указание подсказок о вместимости карты] (container-capacity.md#указание подсказок о вместимости карты)
+для получения дополнительной информации.
 
-On the other hand, if the map holds a fixed list of elements,
-use map literals to initialize the map.
+С другой стороны, если карта содержит фиксированный список элементов,
+используйте литералы карты для инициализации карты.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3608,16 +3606,16 @@ m := map[T1]T2{
 </td></tr>
 </tbody></table>
 
-The basic rule of thumb is to use map literals when adding a fixed set of
-elements at initialization time, otherwise use `make` (and specify a size hint
-if available).
+Основное эмпирическое правило заключается в использовании литералов map при добавлении фиксированного набора
+элементов во время инициализации, в противном случае используйте `make` (и укажите подсказку по размеру,
+если таковая имеется).
 
-### Format Strings outside Printf
+### Строки форматирования вне Printf
 
-If you declare format strings for `Printf`-style functions outside a string
-literal, make them `const` values.
+Если вы объявляете строки форматирования для функций в стиле Printf вне строкового
+литерала, сделайте их значениями const.
 
-This helps `go vet` perform static analysis of the format string.
+Это помогает программе go vet выполнять статический анализ строки форматирования.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3639,35 +3637,35 @@ fmt.Printf(msg, 1, 2)
 </td></tr>
 </tbody></table>
 
-### Naming Printf-style Functions
+### Присвоение имен функциям в стиле Printf
 
-When you declare a `Printf`-style function, make sure that `go vet` can detect
-it and check the format string.
+Когда вы объявляете функцию в стиле Printf, убедитесь, что "go vet" может ее обнаружить
+и проверить строку формата.
 
-This means that you should use predefined `Printf`-style function
-names if possible. `go vet` will check these by default. See [Printf family](https://pkg.go.dev/cmd/vet#hdr-Printf_family)
-for more information.
+Это означает, что вам следует по возможности использовать предопределенные имена функций в стиле Printf.
+`go vet` проверит их по умолчанию. Смотрите [Семейство Printf](https://pkg.go.dev/cmd/vet#hdr-Printf_family)
+для получения дополнительной информации.
 
-If using the predefined names is not an option, end the name you choose with
-f: `Wrapf`, not `Wrap`. `go vet` can be asked to check specific `Printf`-style
-names but they must end with f.
+Если использование предопределенных имен не является возможным, завершите выбранное имя с помощью
+f: "Wrapf", а не `Wrap`. `go vet" можно попросить проверить определенные имена в стиле "Printf"
+, но они должны заканчиваться на f.
 
 ```shell
 go vet -printfuncs=wrapf,statusf
 ```
 
-See also [go vet: Printf family check](https://kuzminva.wordpress.com/2017/11/07/go-vet-printf-family-check/).
+Смотрите также [перейти к ветеринару: проверка семьи с помощью Printf](https://kuzminva.wordpress.com/2017/11/07/go-vet-printf-family-check/).
 
-## Patterns
+## Шаблоны
 
-### Test Tables
+### Тестовые таблицы
 
-Table-driven tests with [subtests](https://go.dev/blog/subtests) can be a helpful pattern for writing tests
-to avoid duplicating code when the core test logic is repetitive.
+Табличные тесты с [субтестами] могут быть полезным шаблоном для написания тестов
+, позволяющим избежать дублирования кода, когда основная логика тестирования повторяется.
 
-If a system under test needs to be tested against *multiple conditions* where
-certain parts of the the inputs and outputs change, a table-driven test should
-be used to reduce redundancy and improve readability.
+Если тестируемую систему необходимо протестировать в нескольких условиях, когда
+определенные части входных и выходных данных изменяются, следует
+использовать тест на основе таблиц, чтобы уменьшить избыточность и улучшить читаемость.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3743,12 +3741,12 @@ for _, tt := range tests {
 </td></tr>
 </tbody></table>
 
-Test tables make it easier to add context to error messages, reduce duplicate
-logic, and add new test cases.
+Тестовые таблицы упрощают добавление контекста к сообщениям об ошибках, сокращают дублирование
+логики и добавляют новые тестовые примеры.
 
-We follow the convention that the slice of structs is referred to as `tests`
-and each test case `tt`. Further, we encourage explicating the input and output
-values for each test case with `give` and `want` prefixes.
+Мы придерживаемся соглашения о том, что фрагмент структур называется "тестами"
+, а каждый тестовый пример - `tt`. Кроме того, мы рекомендуем пояснять входные и выходные
+значения для каждого тестового примера с помощью префиксов `give` и `want`.
 
 ```go
 tests := []struct{
@@ -3764,46 +3762,46 @@ for _, tt := range tests {
 }
 ```
 
-#### Avoid Unnecessary Complexity in Table Tests
+#### Избегайте излишней сложности табличных тестов
 
-Table tests can be difficult to read and maintain if the subtests contain conditional
-assertions or other branching logic. Table tests should **NOT** be used whenever
-there needs to be complex or conditional logic inside subtests (i.e. complex logic inside the `for` loop).
+Табличные тесты могут быть сложными для чтения и сопровождения, если субтесты содержат условные
+утверждения или другую логику ветвления. Табличные тесты не следует использовать всякий
+раз, когда внутри субтестов должна быть сложная или условная логика (т.е. сложная логика внутри цикла `for`).
 
-Large, complex table tests harm readability and maintainability because test readers may
-have difficulty debugging test failures that occur.
+Большие и сложные табличные тесты ухудшают читаемость и удобство сопровождения, поскольку у средств чтения тестов могут
+возникнуть трудности с отладкой возникающих ошибок.
 
-Table tests like this should be split into either multiple test tables or multiple
-individual `Test...` functions.
+Подобные табличные тесты следует разделить либо на несколько тестовых таблиц, либо на несколько
+отдельных функций "Test...".
 
-Some ideals to aim for are:
+Вот некоторые идеалы, к которым следует стремиться::
 
-* Focus on the narrowest unit of behavior
-* Minimize "test depth", and avoid conditional assertions (see below)
-* Ensure that all table fields are used in all tests
-* Ensure that all test logic runs for all table cases
+* Сосредоточьтесь на самой узкой единице поведения
+* Сведите к минимуму "глубину тестирования" и избегайте условных утверждений (см. ниже)
+* Убедитесь, что все поля таблицы используются во всех тестах
+* Убедитесь, что вся логика тестирования выполняется для всех вариантов таблиц
 
-In this context, "test depth" means "within a given test, the number of
-successive assertions that require previous assertions to hold" (similar
-to cyclomatic complexity).
-Having "shallower" tests means that there are fewer relationships between
-assertions and, more importantly, that those assertions are less likely
-to be conditional by default.
+В этом контексте "глубина тестирования" означает "в рамках данного теста количество
+последовательных утверждений, для выполнения которых требуются предыдущие утверждения" (аналогично
+цикломатической сложности).
+Наличие "более мелких" тестов означает, что между
+утверждениями меньше взаимосвязей и, что более важно, что эти утверждения с меньшей вероятностью
+будут условными по умолчанию.
 
-Concretely, table tests can become confusing and difficult to read if they use multiple branching
-pathways (e.g. `shouldError`, `expectCall`, etc.), use many `if` statements for
-specific mock expectations (e.g. `shouldCallFoo`), or place functions inside the
-table (e.g. `setupMocks func(*FooMock)`).
+В частности, табличные тесты могут стать запутанными и трудными для чтения, если они используют несколько
+путей ветвления (например, `shouldError`, `expectCall` и т.д.), используют множество инструкций `if` для
+конкретных условных ожиданий (например, `shouldCallFoo`) или размещают функции внутри
+таблицы (например, `setupMocks func(*FooMock)`).
 
-However, when testing behavior that only
-changes based on changed input, it may be preferable to group similar cases
-together in a table test to better illustrate how behavior changes across all inputs,
-rather than splitting otherwise comparable units into separate tests
-and making them harder to compare and contrast.
+Однако при тестировании поведения, которое
+изменяется только в зависимости от измененных входных данных, может оказаться предпочтительнее сгруппировать похожие случаи
+в табличный тест, чтобы лучше проиллюстрировать, как меняется поведение во всех входных данных,
+а не разбивать сопоставимые в остальном блоки на отдельные тесты
+и усложняет их сравнение и противопоставление.
 
-If the test body is short and straightforward,
-it's acceptable to have a single branching pathway for success versus failure cases
-with a table field like `shouldErr` to specify error expectations.
+Если текст теста короткий и понятный,
+допустимо иметь единый путь ветвления для случаев успеха и неудачи
+с полем таблицы, например "shouldErr", для указания ожидаемых ошибок.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3889,19 +3887,19 @@ func TestShouldCallYAndFail(t *testing.T) {
 </td></tr>
 </tbody></table>
 
-This complexity makes it more difficult to change, understand, and prove the
-correctness of the test.
+Такая сложность затрудняет изменение, понимание и доказательство
+правильности теста.
 
-While there are no strict guidelines, readability and maintainability should
-always be top-of-mind when deciding between Table Tests versus separate tests
-for multiple inputs/outputs to a system.
+Хотя строгих рекомендаций не существует,
+при выборе между табличными тестами и отдельными тестами
+для нескольких входов/выходов в систему всегда следует учитывать удобство чтения и сопровождения.
 
-#### Parallel Tests
+#### Параллельные тесты
 
-Parallel tests, like some specialized loops (for example, those that spawn
-goroutines or capture references as part of the loop body),
-must take care to explicitly assign loop variables within the loop's scope to
-ensure that they hold the expected values.
+Параллельные тесты, такие как некоторые специализированные циклы (например, те, которые запускают
+goroutines или фиксируют ссылки как часть тела цикла),
+должны обеспечивать явное назначение переменных цикла в пределах области действия цикла, чтобы
+гарантировать, что они содержат ожидаемые значения.
 
 ```go
 tests := []struct{
@@ -3920,23 +3918,23 @@ for _, tt := range tests {
 }
 ```
 
-In the example above, we must declare a `tt` variable scoped to the loop
-iteration because of the use of `t.Parallel()` below.
-If we do not do that, most or all tests will receive an unexpected value for
-`tt`, or a value that changes as they're running.
+В приведенном выше примере мы должны объявить переменную `tt`
+, область действия которой ограничена итерацией цикла, из-за использования `t.t` приведена функция `Parallel()`.
+Если мы этого не сделаем, большинство или все тесты получат неожиданное значение для
+`tt` или значение, которое меняется по мере их выполнения.
 
 <!-- TODO: Explain how to use _test packages. -->
 
-### Functional Options
+### Функциональные параметры
 
-Functional options is a pattern in which you declare an opaque `Option` type
-that records information in some internal struct. You accept a variadic number
-of these options and act upon the full information recorded by the options on
-the internal struct.
+Функциональные параметры - это шаблон, в котором вы объявляете непрозрачный тип "Option"
+, который записывает информацию в некоторую внутреннюю структуру. Вы принимаете различное количество
+этих параметров и действуете на основе полной информации, записанной параметрами во
+внутренней структуре.
 
-Use this pattern for optional arguments in constructors and other public APIs
-that you foresee needing to expand, especially if you already have three or
-more arguments on those functions.
+Используйте этот шаблон для необязательных аргументов в конструкторах и других общедоступных API
+, которые, как вы предполагаете, потребуется расширить, особенно если у вас уже есть три или
+более аргумента для этих функций.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -3984,8 +3982,8 @@ func Open(
 </td></tr>
 <tr><td>
 
-The cache and logger parameters must always be provided, even if the user
-wants to use the default.
+Параметры кэша и регистратора должны быть указаны всегда, даже если пользователь
+хочет использовать параметры по умолчанию.
 
 ```go
 db.Open(addr, db.DefaultCache, zap.NewNop())
@@ -3996,7 +3994,7 @@ db.Open(addr, false /* cache */, log)
 
 </td><td>
 
-Options are provided only if needed.
+Опции предоставляются только в случае необходимости.
 
 ```go
 db.Open(addr)
@@ -4012,9 +4010,8 @@ db.Open(
 </td></tr>
 </tbody></table>
 
-Our suggested way of implementing this pattern is with an `Option` interface
-that holds an unexported method, recording options on an unexported `options`
-struct.
+Мы предлагаем способ реализации этого шаблона с помощью интерфейса `Option`,
+который содержит неэкспортированный метод, записывающий параметры в неэкспортированную структуру `options`.
 
 ```go
 type options struct {
@@ -4066,44 +4063,44 @@ func Open(
 }
 ```
 
-Note that there's a method of implementing this pattern with closures but we
-believe that the pattern above provides more flexibility for authors and is
-easier to debug and test for users. In particular, it allows options to be
-compared against each other in tests and mocks, versus closures where this is
-impossible. Further, it lets options implement other interfaces, including
-`fmt.Stringer` which allows for user-readable string representations of the
-options.
+Обратите внимание, что существует способ реализации этого шаблона с помощью замыканий, но мы
+считаем, что приведенный выше шаблон обеспечивает большую гибкость для авторов и
+проще в отладке и тестировании для пользователей. В частности, это позволяет
+сравнивать параметры друг с другом в тестах и макетах, а также при закрытии, когда это
+невозможно. Кроме того, это позволяет options реализовывать другие интерфейсы, включая
+`fmt.Stringer`, который позволяет создавать понятные пользователю строковые представления
+параметров.
 
-See also,
+Смотрите также,
 
-- [Self-referential functions and the design of options](https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html)
-- [Functional options for friendly APIs](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis)
+- [Самореферентные функции и дизайн опций]
+- [Функциональные возможности для дружественных API-интерфейсов](https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis)
 
 <!-- TODO: replace this with parameter structs and functional options, when to
 use one vs other -->
 
 ## Linting
 
-More importantly than any "blessed" set of linters, lint consistently across a
-codebase.
+Более важным, чем любой "благословенный" набор линтеров, является последовательная линтинг-обработка всей
+кодовой базы.
 
-We recommend using the following linters at a minimum, because we feel that they
-help to catch the most common issues and also establish a high bar for code
-quality without being unnecessarily prescriptive:
+Мы рекомендуем использовать как минимум следующие линтеры, поскольку считаем, что они
+помогают выявлять наиболее распространенные проблемы, а также устанавливают высокие требования к коду
+качество без излишних предписаний:
 
-- [errcheck](https://github.com/kisielk/errcheck) to ensure that errors are handled
-- [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) to format code and manage imports
-- [golint](https://github.com/golang/lint) to point out common style mistakes
-- [govet](https://pkg.go.dev/cmd/vet) to analyze code for common mistakes
-- [staticcheck](https://staticcheck.dev) to do various static analysis checks
+- [errcheck](https://github.com/kisielk/errcheck) для обеспечения обработки ошибок
+- [goimports](https://pkg.go.dev/golang.org/x/tools/cmd/goimports) для форматирования кода и управления импортом
+- [golint](https://github.com/golang/lint) для выявления распространенных ошибок в стиле
+- [govet](https://pkg.go.dev/cmd/vet) для анализа кода на наличие распространенных ошибок
+- [staticcheck](https://staticcheck.dev) для выполнения различных проверок статического анализа
 
 ### Lint Runners
 
-We recommend [golangci-lint](https://github.com/golangci/golangci-lint) as the go-to lint runner for Go code, largely due
-to its performance in larger codebases and ability to configure and use many
-canonical linters at once. This repo has an example [.golangci.yml](https://github.com/uber-go/guide/blob/master/.golangci.yml) config file
-with recommended linters and settings.
+Мы рекомендуем [golangci-lint](https://github.com/golangci/golangci-lint) в качестве универсального средства компоновки для Go code, в основном из-за
+его производительности в больших кодовых базах и возможности настраивать и использовать множество
+канонических линтеров одновременно. В этом репозитории есть пример конфигурационного файла [.golangci.yml](https://github.com/uber-go/guide/blob/master/.golangci.yml)
+с рекомендуемыми средствами компоновки и настройками.
 
-golangci-lint has [various linters](https://golangci-lint.run/usage/linters/) available for use. The above linters are
-recommended as a base set, and we encourage teams to add any additional linters
-that make sense for their projects.
+В golangci-lint есть [различные средства компоновки](https://golangci-lint.run/usage/linters/), доступные для использования. Вышеуказанные средства компоновки являются
+рекомендуется в качестве базового набора, и мы рекомендуем командам добавлять любые дополнительные средства компоновки
+, которые имеют смысл для их проектов.

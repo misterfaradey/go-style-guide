@@ -1,13 +1,13 @@
-# Exit in Main
+# Завершите работу в главном меню
 
-Go programs use [`os.Exit`] or [`log.Fatal*`] to exit immediately. (Panicking
-is not a good way to exit programs, please [don't panic](panic.md).)
-
+Для немедленного завершения работы в программах Go используйте [`os.Exit`] или [`log.Fatal*`]. (Паника
+- не лучший способ выхода из программ, пожалуйста, [не паникуйте](panic.md).)
+- 
   [`os.Exit`]: https://pkg.go.dev/os#Exit
   [`log.Fatal*`]: https://pkg.go.dev/log#Fatal
 
-Call one of `os.Exit` or `log.Fatal*` **only in `main()`**. All other
-functions should return errors to signal failure.
+Вызовите одну из `os.Exit` или `log.Fatal*` **только в `main()`**. Все остальные
+функции должны возвращать ошибки, сигнализирующие о сбое.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -64,13 +64,13 @@ func readFile(path string) (string, error) {
 </td></tr>
 </tbody></table>
 
-Rationale: Programs with multiple functions that exit present a few issues:
+Обоснование: Программы с несколькими функциями, которые завершают работу, создают несколько проблем:
 
-- Non-obvious control flow: Any function can exit the program so it becomes
-  difficult to reason about the control flow.
-- Difficult to test: A function that exits the program will also exit the test
-  calling it. This makes the function difficult to test and introduces risk of
-  skipping other tests that have not yet been run by `go test`.
-- Skipped cleanup: When a function exits the program, it skips function calls
-  enqueued with `defer` statements. This adds risk of skipping important
-  cleanup tasks.
+- Неочевидный поток управления: любая функция может завершить работу программы, поэтому становится
+  трудно разобраться в потоке управления.
+- Сложно протестировать: функция, которая завершает работу программы, также завершит тест
+  , вызывающий ее. Это затрудняет тестирование функции и создает риск
+  пропуска других тестов, которые еще не были запущены с помощью "go test".
+- Пропущенная очистка: когда функция выходит из программы, она пропускает вызовы функций
+  помещается в очередь с инструкциями `отложить`. Это увеличивает риск пропуска важных
+  задач по очистке.

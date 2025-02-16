@@ -1,6 +1,6 @@
-# Group Similar Declarations
+# Группировать похожие объявления
 
-Go supports grouping similar declarations.
+Go поддерживает группирование похожих объявлений.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

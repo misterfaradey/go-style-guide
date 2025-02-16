@@ -1,7 +1,7 @@
-# Avoid Naked Parameters
+# Избегайте открытых параметров
 
-Naked parameters in function calls can hurt readability. Add C-style comments
-(`/* ... */`) for parameter names when their meaning is not obvious.
+Именованные параметры в вызовах функций могут ухудшить читаемость. Добавляйте комментарии в стиле Си
+(`/* ... */`) для имен параметров, если их значение неочевидно.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -25,9 +25,8 @@ printInfo("foo", true /* isLocal */, true /* done */)
 </td></tr>
 </tbody></table>
 
-Better yet, replace naked `bool` types with custom types for more readable and
-type-safe code. This allows more than just two states (true/false) for that
-parameter in the future.
+А еще лучше, замените обычные типы `bool` пользовательскими типами для более удобочитаемого и
+типобезопасного кода. В будущем для этого параметра будет разрешено не только два состояния (true/false).
 
 ```go
 type Region int
@@ -42,7 +41,7 @@ type Status int
 const (
   StatusReady Status = iota + 1
   StatusDone
-  // Maybe we will have a StatusInProgress in the future.
+  // // Возможно, в будущем у нас будет статус InProgress.
 )
 
 func printInfo(name string, region Region, status Status)

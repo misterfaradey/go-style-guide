@@ -1,7 +1,7 @@
-# Local Variable Declarations
+# Объявления локальных переменных
 
-Short variable declarations (`:=`) should be used if a variable is being set to
-some value explicitly.
+Короткие объявления переменных (`:=`) следует использовать, если переменной явно присваивается
+какое-либо значение.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -21,10 +21,10 @@ s := "foo"
 </td></tr>
 </tbody></table>
 
-However, there are cases where the default value is clearer when the `var`
-keyword is used. [Declaring Empty Slices], for example.
+Однако в некоторых случаях значение по умолчанию становится более понятным, когда
+используется ключевое слово `var`. Например, [Объявление пустых Slices].
 
-  [Declaring Empty Slices]: https://go.dev/wiki/CodeReviewComments#declaring-empty-slices
+  [Объявление пустых]: https://go.dev/wiki/CodeReviewComments#declaring-empty-slices
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

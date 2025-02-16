@@ -1,27 +1,27 @@
-# Don't fire-and-forget goroutines
+# Не запускайте и не забывайте о подпрограммах
 
-Goroutines are lightweight, but they're not free:
-at minimum, they cost memory for their stack and CPU to be scheduled.
-While these costs are small for typical uses of goroutines,
-they can cause significant performance issues
-when spawned in large numbers without controlled lifetimes.
-Goroutines with unmanaged lifetimes can also cause other issues
-like preventing unused objects from being garbage collected
-and holding onto resources that are otherwise no longer used.
+Подпрограммы просты, но они не бесплатны:
+как минимум, они требуют памяти для своего стека и центрального процессора для планирования.
+Несмотря на то, что эти затраты невелики при обычном использовании подпрограмм,
+они могут вызвать значительные проблемы с производительностью
+при запуске в больших количествах без контролируемого времени жизни.
+Программы с неуправляемым временем жизни также могут вызывать другие проблемы
+, например, предотвращать сборку мусора для неиспользуемых объектов
+и сохранять ресурсы, которые в противном случае больше не используются.
 
-Therefore, do not leak goroutines in production code.
-Use [go.uber.org/goleak](https://pkg.go.dev/go.uber.org/goleak)
-to test for goroutine leaks inside packages that may spawn goroutines.
+Поэтому не допускайте утечки программ в рабочий код.
+Используйте [go.uber.org/goleak](https://pkg.go.dev/go.uber.org/goleak)
+для проверки на наличие утечек в программах внутри пакетов, которые могут вызывать такие программы.
 
-In general, every goroutine:
+В общем, каждая программа:
 
-- must have a predictable time at which it will stop running; or
-- there must be a way to signal to the goroutine that it should stop
+- должна иметь предсказуемое время, когда она перестанет выполняться; или
+- должен быть способ подать программе сигнал о том, что она должна остановиться
 
-In both cases, there must be a way code to block and wait for the goroutine to
-finish.
+В обоих случаях должен быть код для блокировки и ожидания
+завершения работы программы.
 
-For example:
+Например:
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -67,13 +67,13 @@ close(stop)  // signal the goroutine to stop
 </td></tr>
 <tr><td>
 
-There's no way to stop this goroutine.
-This will run until the application exits.
+Остановить эту процедуру невозможно.
+Она будет выполняться до завершения работы приложения.
 
 </td><td>
 
-This goroutine can be stopped with `close(stop)`,
-and we can wait for it to exit with `<-done`.
+Эту подпрограмму можно остановить с помощью `закрыть (stop)`,
+и мы не можем ждать, пока она завершится с помощью `<-done`.
 
 </td></tr>
 </tbody></table>

@@ -1,13 +1,13 @@
-# No goroutines in `init()`
+# Никаких подпрограмм в `init()`
 
-`init()` functions should not spawn goroutines.
-See also [Avoid init()](init.md).
+Функции `init()` не должны создавать подпрограммы.
+Смотрите также [Избегайте init()](init.md).
 
-If a package has need of a background goroutine,
-it must expose an object that is responsible for managing a goroutine's
-lifetime.
-The object must provide a method (`Close`, `Stop`, `Shutdown`, etc)
-that signals the background goroutine to stop, and waits for it to exit.
+Если пакету требуется фоновая подпрограмма,
+он должен предоставить доступ к объекту, который отвечает за управление временем
+жизни подпрограмм.
+Объект должен предоставлять метод (`Close`, `Stop`, `Shutdown`, и т.д.).
+это сигнализирует об остановке фоновой программы и ожидает ее завершения.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -49,8 +49,8 @@ func (w *Worker) doWork() {
   }
 }
 
-// Shutdown tells the worker to stop
-// and waits until it has finished.
+// Shutdown приказывает работнику остановиться
+// и ждет, пока он не завершит работу.
 func (w *Worker) Shutdown() {
   close(w.stop)
   <-w.done
@@ -60,18 +60,18 @@ func (w *Worker) Shutdown() {
 </td></tr>
 <tr><td>
 
-Spawns a background goroutine unconditionally when the user exports this package.
-The user has no control over the goroutine or a means of stopping it.
+Запускает фоновую подпрограмму без каких-либо условий, когда пользователь экспортирует этот пакет.
+Пользователь не имеет никакого контроля над подпрограммой или средств ее остановки.
 
 </td><td>
 
-Spawns the worker only if the user requests it.
-Provides a means of shutting down the worker so that the user can free up
-resources used by the worker.
+Запускает worker только по запросу пользователя.
+Предоставляет средство завершения работы worker, чтобы пользователь мог освободить
+ресурсы, используемые worker.
 
-Note that you should use `WaitGroup`s if the worker manages multiple
-goroutines.
-See [Wait for goroutines to exit](goroutine-exit.md).
+Обратите внимание, что вам следует использовать "WaitGroup", если worker управляет несколькими
+подпрограммами.
+Смотрите [Дождитесь завершения выполнения подпрограммы](goroutine-exit.md).
 
 </td></tr>
 </tbody></table>

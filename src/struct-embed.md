@@ -1,8 +1,7 @@
-# Embedding in Structs
+# # Встраивание в структуры
 
-Embedded types should be at the top of the field list of a
-struct, and there must be an empty line separating embedded fields from regular
-fields.
+Встроенные типы должны располагаться в верхней части списка полей
+структуры, и должна быть пустая строка, отделяющая встроенные поля от обычных.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -29,33 +28,33 @@ type Client struct {
 </td></tr>
 </tbody></table>
 
-Embedding should provide tangible benefit, like adding or augmenting
-functionality in a semantically-appropriate way. It should do this with zero
-adverse user-facing effects (see also: [Avoid Embedding Types in Public Structs](embed-public.md)).
+Внедрение должно приносить ощутимую пользу, например, добавлять или расширять
+функциональность семантически приемлемым способом. Это должно происходить с нулевым
+негативным воздействием на пользователя (см. также: [Избегайте внедрения типов в общедоступные структуры](embed-public.md)).
 
-Exception: Mutexes should not be embedded, even on unexported types. See also: [Zero-value Mutexes are Valid](mutex-zero-value.md).
+Исключение: Мьютексы не должны встраиваться даже в неэкспортируемые типы. Смотрите также: [Допустимы мьютексы с нулевым значением](mutex-zero-value.md).
 
-Embedding **should not**:
+Встраивание ** не должно быть**:
 
-- Be purely cosmetic or convenience-oriented.
-- Make outer types more difficult to construct or use.
-- Affect outer types' zero values. If the outer type has a useful zero value, it
-  should still have a useful zero value after embedding the inner type.
-- Expose unrelated functions or fields from the outer type as a side-effect of
-  embedding the inner type.
-- Expose unexported types.
-- Affect outer types' copy semantics.
-- Change the outer type's API or type semantics.
-- Embed a non-canonical form of the inner type.
-- Expose implementation details of the outer type.
-- Allow users to observe or control type internals.
-- Change the general behavior of inner functions through wrapping in a way that
-  would reasonably surprise users.
+- чисто косметическим или ориентированным на удобство.
+- Усложняет создание или использование внешних типов.
+- Влияет на нулевые значения внешних типов. Если внешний тип имеет полезное нулевое значение, он
+  после внедрения внутреннего типа все равно должно быть полезное нулевое значение.
+- Отображение несвязанных функций или полей из внешнего типа в качестве побочного эффекта
+  внедрения внутреннего типа.
+- Отображение неэкспортированных типов.
+- Изменение семантики копирования внешних типов.
+- Измените API внешнего типа или семантику типа.
+- Внедрите неканоническую форму внутреннего типа.
+- Предоставьте подробную информацию о реализации внешнего типа.
+- Разрешите пользователям наблюдать за внутренними элементами типа или управлять ими.
+- Измените общее поведение внутренних функций, обернув их таким образом, чтобы это
+  могло приятно удивить пользователей.
 
-Simply put, embed consciously and intentionally. A good litmus test is, "would
-all of these exported inner methods/fields be added directly to the outer type";
-if the answer is "some" or "no", don't embed the inner type - use a field
-instead.
+Проще говоря, внедряйте сознательно и преднамеренно. Хороший тест на лакмусовую бумажку заключается в следующем: "будут
+ли все эти экспортированные внутренние методы/поля добавлены непосредственно во внешний тип".;
+если ответ "какой-то" или "нет", не вводите внутренний тип - используйте
+вместо него поле.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -64,11 +63,11 @@ instead.
 
 ```go
 type A struct {
-    // Bad: A.Lock() and A.Unlock() are
-    //      now available, provide no
-    //      functional benefit, and allow
-    //      users to control details about
-    //      the internals of A.
+    // Ошибка: функции A.Lock() и A.Unlock()
+    // доступны в настоящее время, не предоставляют
+    // функциональных преимуществ и позволяют
+    // пользователям управлять подробностями о
+    // внутреннем устройстве A.
     sync.Mutex
 }
 ```
@@ -77,10 +76,10 @@ type A struct {
 
 ```go
 type countingWriteCloser struct {
-    // Good: Write() is provided at this
-    //       outer layer for a specific
-    //       purpose, and delegates work
-    //       to the inner type's Write().
+    // Хорошо: функция Write() предусмотрена на этом
+    // внешнем уровне для определенной
+    // цели и делегирует работу
+    // функции Write() внутреннего типа.
     io.WriteCloser
 
     count int
@@ -97,7 +96,7 @@ func (w *countingWriteCloser) Write(bs []byte) (int, error) {
 
 ```go
 type Book struct {
-    // Bad: pointer changes zero value usefulness
+    // Bad: указатель изменяет полезность нулевого значения
     io.ReadWriter
 
     // other fields
@@ -115,7 +114,7 @@ b.Write(...) // panic: nil pointer
 
 ```go
 type Book struct {
-    // Good: has useful zero value
+    // Good: имеет полезное нулевое значение
     bytes.Buffer
 
     // other fields

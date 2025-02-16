@@ -1,6 +1,6 @@
-# Prefer strconv over fmt
+# Предпочитайте strconv, а не fmt
 
-When converting primitives to/from strings, `strconv` is faster than
+При преобразовании примитивов в строки и из них "strconv" работает быстрее, чем
 `fmt`.
 
 <table>

@@ -1,8 +1,8 @@
-# Reduce Nesting
+# Уменьшить вложенность
 
-Code should reduce nesting where possible by handling error cases/special
-conditions first and returning early or continuing the loop. Reduce the amount
-of code that is nested multiple levels.
+Код должен по возможности уменьшать вложенность, сначала обрабатывая случаи ошибок/ особые
+условия и возвращая их на ранней стадии или продолжая цикл. Уменьшите объем
+кода, который вложен на нескольких уровнях.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

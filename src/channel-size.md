@@ -1,10 +1,10 @@
-# Channel Size is One or None
+# Размер канала равен единице или не имеет значения
 
-Channels should usually have a size of one or be unbuffered. By default,
-channels are unbuffered and have a size of zero. Any other size
-must be subject to a high level of scrutiny. Consider how the size is
-determined, what prevents the channel from filling up under load and blocking
-writers, and what happens when this occurs.
+Каналы обычно должны иметь размер, равный единице, или быть небуферизованными. По умолчанию
+каналы не имеют буферизации и имеют нулевой размер. Любой другой размер
+должен быть предметом тщательной проверки. Рассмотрим, как
+определяется размер, что препятствует заполнению канала под нагрузкой и блокированию
+записи, и что происходит, когда это происходит.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -12,16 +12,16 @@ writers, and what happens when this occurs.
 <tr><td>
 
 ```go
-// Ought to be enough for anybody!
+// Этого должно быть достаточно для любого!
 c := make(chan int, 64)
 ```
 
 </td><td>
 
 ```go
-// Size of one
-c := make(chan int, 1) // or
-// Unbuffered channel, size of zero
+// размера 1
+c := make(chan int, 1) // или
+// Небуферизованный канал, размер которого равен нулю
 c := make(chan int)
 ```
 

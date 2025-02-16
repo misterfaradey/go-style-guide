@@ -1,2 +1,2 @@
-The contents of this directory are used to generate the top-level style.md.
-The layout is controlled by SUMMARY.md.
+Содержимое этого каталога используется для создания верхнего уровня style.md.
+Компоновка контролируется с помощью SUMMARY.md.

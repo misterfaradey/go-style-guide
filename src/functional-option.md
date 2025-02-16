@@ -1,13 +1,13 @@
-# Functional Options
+# Функциональные параметры
 
-Functional options is a pattern in which you declare an opaque `Option` type
-that records information in some internal struct. You accept a variadic number
-of these options and act upon the full information recorded by the options on
-the internal struct.
+Функциональные параметры - это шаблон, в котором вы объявляете непрозрачный тип "Option"
+, который записывает информацию в некоторую внутреннюю структуру. Вы принимаете различное количество
+этих параметров и действуете на основе полной информации, записанной параметрами во
+внутренней структуре.
 
-Use this pattern for optional arguments in constructors and other public APIs
-that you foresee needing to expand, especially if you already have three or
-more arguments on those functions.
+Используйте этот шаблон для необязательных аргументов в конструкторах и других общедоступных API
+, которые, как вы предполагаете, потребуется расширить, особенно если у вас уже есть три или
+более аргумента для этих функций.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -55,8 +55,8 @@ func Open(
 </td></tr>
 <tr><td>
 
-The cache and logger parameters must always be provided, even if the user
-wants to use the default.
+Параметры кэша и регистратора должны быть указаны всегда, даже если пользователь
+хочет использовать параметры по умолчанию.
 
 ```go
 db.Open(addr, db.DefaultCache, zap.NewNop())
@@ -67,7 +67,7 @@ db.Open(addr, false /* cache */, log)
 
 </td><td>
 
-Options are provided only if needed.
+Опции предоставляются только в случае необходимости.
 
 ```go
 db.Open(addr)
@@ -83,9 +83,8 @@ db.Open(
 </td></tr>
 </tbody></table>
 
-Our suggested way of implementing this pattern is with an `Option` interface
-that holds an unexported method, recording options on an unexported `options`
-struct.
+Мы предлагаем способ реализации этого шаблона с помощью интерфейса `Option`,
+который содержит неэкспортированный метод, записывающий параметры в неэкспортированную структуру `options`.
 
 ```go
 type options struct {
@@ -137,21 +136,21 @@ func Open(
 }
 ```
 
-Note that there's a method of implementing this pattern with closures but we
-believe that the pattern above provides more flexibility for authors and is
-easier to debug and test for users. In particular, it allows options to be
-compared against each other in tests and mocks, versus closures where this is
-impossible. Further, it lets options implement other interfaces, including
-`fmt.Stringer` which allows for user-readable string representations of the
-options.
+Обратите внимание, что существует способ реализации этого шаблона с помощью замыканий, но мы
+считаем, что приведенный выше шаблон обеспечивает большую гибкость для авторов и
+проще в отладке и тестировании для пользователей. В частности, это позволяет
+сравнивать параметры друг с другом в тестах и макетах, а также при закрытии, когда это
+невозможно. Кроме того, это позволяет options реализовывать другие интерфейсы, включая
+`fmt.Stringer`, который позволяет создавать понятные пользователю строковые представления
+параметров.
 
-See also,
+Смотрите также,
 
-- [Self-referential functions and the design of options]
-- [Functional options for friendly APIs]
+- [Самореферентные функции и дизайн опций]
+- [Функциональные возможности для дружественных API-интерфейсов]
 
-  [Self-referential functions and the design of options]: https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html
-  [Functional options for friendly APIs]: https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
+  [Самореферентные функции и разработка опций]:  https://commandcenter.blogspot.com/2014/01/self-referential-functions-and-design.html
+  [Функциональные возможности для дружественных API-интерфейсов]: https://dave.cheney.net/2014/10/17/functional-options-for-friendly-apis
 
 <!-- TODO: replace this with parameter structs and functional options, when to
 use one vs other -->

@@ -1,11 +1,11 @@
-# Receivers and Interfaces
+# Приемники и интерфейсы
 
-Methods with value receivers can be called on pointers as well as values.
-Methods with pointer receivers can only be called on pointers or [addressable values].
+Методы с приемниками значений могут вызываться как для указателей, так и для значений.
+Методы с приемниками указателей могут вызываться только для указателей или [адресуемых значений].
 
-  [addressable values]: https://go.dev/ref/spec#Method_values
+[адресуемые значения]: https://go.dev/ref/spec#Method_values
 
-For example,
+Например,
 
 ```go
 type S struct {
@@ -20,31 +20,31 @@ func (s *S) Write(str string) {
   s.data = str
 }
 
-// We cannot get pointers to values stored in maps, because they are not
-// addressable values.
+// Мы не можем получить указатели на значения, хранящиеся в картах, потому что они не являются
+// адресуемыми значениями.
 sVals := map[int]S{1: {"A"}}
 
-// We can call Read on values stored in the map because Read
-// has a value receiver, which does not require the value to
-// be addressable.
+// Мы можем вызвать Read для значений, хранящихся в map, потому что Read
+// имеет приемник значений, который не требует, чтобы значение
+// было адресуемым.
 sVals[1].Read()
 
-// We cannot call Write on values stored in the map because Write
-// has a pointer receiver, and it's not possible to get a pointer
-// to a value stored in a map.
+// Мы не можем вызвать функцию Write для значений, хранящихся на карте, потому что функция Write
+// имеет приемник указателей, а получить указатель
+// на значение, хранящееся на карте, невозможно.
 //
-//  sVals[1].Write("test")
+// sVals[1].Write("test")
 
 sPtrs := map[int]*S{1: {"A"}}
 
-// You can call both Read and Write if the map stores pointers,
-// because pointers are intrinsically addressable.
+// Вы можете вызывать как Read, так и Write, если карта хранит указатели,
+// потому что указатели по своей сути адресуемы.
 sPtrs[1].Read()
 sPtrs[1].Write("test")
 ```
 
-Similarly, an interface can be satisfied by a pointer, even if the method has a
-value receiver.
+Аналогично, интерфейс может быть удовлетворен указателем, даже если у метода есть
+получатель значений.
 
 ```go
 type F interface {
@@ -69,10 +69,10 @@ i = s1Val
 i = s1Ptr
 i = s2Ptr
 
-// The following doesn't compile, since s2Val is a value, and there is no value receiver for f.
-//   i = s2Val
+// // Следующее не скомпилируется, поскольку s2Val - это значение, а для f нет приемника значений.
+// i = s2Val
 ```
 
-Effective Go has a good write up on [Pointers vs. Values].
+В Effective Go есть хорошая статья о [указатели и  значения].
 
-  [Pointers vs. Values]: https://go.dev/doc/effective_go#pointers_vs_values
+[Указатели и  Значения]: https://go.dev/doc/effective_go#pointers_vs_values

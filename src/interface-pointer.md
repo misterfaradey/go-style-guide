@@ -1,14 +1,14 @@
-# Pointers to Interfaces
+# Указатели на интерфейсы
 
-You almost never need a pointer to an interface. You should be passing
-interfaces as values—the underlying data can still be a pointer.
+Указатель на интерфейс практически никогда не требуется. Вы должны передавать
+интерфейсы в виде значений — базовые данные все равно могут быть указателями.
 
-An interface is two fields:
+Интерфейс - это два поля:
 
-1. A pointer to some type-specific information. You can think of this as
-  "type."
-2. Data pointer. If the data stored is a pointer, it’s stored directly. If
-  the data stored is a value, then a pointer to the value is stored.
+1. Указатель на некоторую информацию, относящуюся к определенному типу. Вы можете представить это как
+   "тип".
+2. Указатель на данные. Если сохраненные данные являются указателем, они сохраняются непосредственно. Если
+   сохраненные данные являются значением, то сохраняется указатель на значение.
 
-If you want interface methods to modify the underlying data, you must use a
-pointer.
+Если вы хотите, чтобы интерфейсные методы изменяли базовые данные, вы должны использовать
+указатель.

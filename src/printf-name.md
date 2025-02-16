@@ -1,22 +1,22 @@
-# Naming Printf-style Functions
+# Присвоение имен функциям в стиле Printf
 
-When you declare a `Printf`-style function, make sure that `go vet` can detect
-it and check the format string.
+Когда вы объявляете функцию в стиле Printf, убедитесь, что "go vet" может ее обнаружить
+и проверить строку формата.
 
-This means that you should use predefined `Printf`-style function
-names if possible. `go vet` will check these by default. See [Printf family]
-for more information.
+Это означает, что вам следует по возможности использовать предопределенные имена функций в стиле Printf.
+`go vet` проверит их по умолчанию. Смотрите [Семейство Printf]
+для получения дополнительной информации.
 
-  [Printf family]: https://pkg.go.dev/cmd/vet#hdr-Printf_family
+[Семейство Printf]: https://pkg.go.dev/cmd/vet#hdr-Printf_family
 
-If using the predefined names is not an option, end the name you choose with
-f: `Wrapf`, not `Wrap`. `go vet` can be asked to check specific `Printf`-style
-names but they must end with f.
+Если использование предопределенных имен не является возможным, завершите выбранное имя с помощью
+f: "Wrapf", а не `Wrap`. `go vet" можно попросить проверить определенные имена в стиле "Printf"
+, но они должны заканчиваться на f.
 
 ```shell
 go vet -printfuncs=wrapf,statusf
 ```
 
-See also [go vet: Printf family check].
+Смотрите также [перейти к ветеринару: проверка семьи с помощью Printf].
 
-  [go vet: Printf family check]: https://kuzminva.wordpress.com/2017/11/07/go-vet-printf-family-check/
+[перейти к ветеринару: проверка семьи с помощью Printf]: https://kuzminva.wordpress.com/2017/11/07/go-vet-printf-family-check/

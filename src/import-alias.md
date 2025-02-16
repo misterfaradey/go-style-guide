@@ -1,7 +1,7 @@
-# Import Aliasing
+# Сглаживание при импорте
 
-Import aliasing must be used if the package name does not match the last
-element of the import path.
+Сглаживание при импорте необходимо использовать, если имя пакета не совпадает с последним
+элементом пути импорта.
 
 ```go
 import (
@@ -12,8 +12,8 @@ import (
 )
 ```
 
-In all other scenarios, import aliases should be avoided unless there is a
-direct conflict between imports.
+Во всех других сценариях следует избегать использования псевдонимов импорта, если
+только между импортируемыми данными нет прямого конфликта.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

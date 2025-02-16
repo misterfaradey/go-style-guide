@@ -1,11 +1,11 @@
-# Use go.uber.org/atomic
+# Используй go.uber.org/atomic
 
-Atomic operations with the [sync/atomic] package operate on the raw types
-(`int32`, `int64`, etc.) so it is easy to forget to use the atomic operation to
-read or modify the variables.
+Атомарные операции с пакетом [sync/atomic] работают с необработанными типами
+(`int32`, `int64` и т.д.), поэтому легко забыть использовать атомарную операцию для
+чтения или изменения переменных.
 
-[go.uber.org/atomic] adds type safety to these operations by hiding the
-underlying type. Additionally, it includes a convenient `atomic.Bool` type.
+[go.uber.org/atomic] повышает безопасность этих операций, скрывая
+базовый тип. Кроме того, он включает удобный тип `atomic.Bool`.
 
   [go.uber.org/atomic]: https://pkg.go.dev/go.uber.org/atomic
   [sync/atomic]: https://pkg.go.dev/sync/atomic

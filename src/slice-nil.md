@@ -1,9 +1,9 @@
-# nil is a valid slice
+# nil - допустимый фрагмент
 
-`nil` is a valid slice of length 0. This means that,
+`nil` - допустимый фрагмент длиной 0. Это означает, что,
 
-- You should not return a slice of length zero explicitly. Return `nil`
-  instead.
+- Вы не должны возвращать фрагмент нулевой длины явно. Возвращайте `nil`
+  вместо.
 
   <table>
   <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -27,7 +27,7 @@
   </td></tr>
   </tbody></table>
 
-- To check if a slice is empty, always use `len(s) == 0`. Do not check for
+- Чтобы проверить, пуст ли фрагмент, всегда используйте `len(s) == 0`. Не проверяйте наличие
   `nil`.
 
   <table>
@@ -52,7 +52,7 @@
   </td></tr>
   </tbody></table>
 
-- The zero value (a slice declared with `var`) is usable immediately without
+- Нулевое значение (фрагмент, объявленный с помощью `var`) можно использовать немедленно без использования
   `make()`.
 
   <table>
@@ -90,6 +90,6 @@
   </td></tr>
   </tbody></table>
 
-Remember that, while it is a valid slice, a nil slice is not equivalent to an
-allocated slice of length 0 - one is nil and the other is not - and the two may
-be treated differently in different situations (such as serialization).
+Помните, что, хотя это допустимый фрагмент, нулевой фрагмент не эквивалентен
+выделенному фрагменту длиной 0 - один из них равен нулю, а другой - нет, - и в разных
+ситуациях (например, при сериализации) они могут обрабатываться по-разному.

@@ -1,17 +1,17 @@
-# Error Types
+# Типы ошибок
 
-There are few options for declaring errors.
-Consider the following before picking the option best suited for your use case.
+Существует несколько вариантов объявления ошибок.
+Прежде чем выбрать вариант, наиболее подходящий для вашего варианта использования, рассмотрите следующее.
 
-- Does the caller need to match the error so that they can handle it?
-  If yes, we must support the [`errors.Is`] or [`errors.As`] functions
-  by declaring a top-level error variable or a custom type.
-- Is the error message a static string,
-  or is it a dynamic string that requires contextual information?
-  For the former, we can use [`errors.New`], but for the latter we must
-  use [`fmt.Errorf`] or a custom error type.
-- Are we propagating a new error returned by a downstream function?
-  If so, see the [section on error wrapping](error-wrap.md).
+- Должен ли вызывающий объект сопоставлять ошибку, чтобы он мог ее обработать?
+  Если да, мы должны поддерживать ошибки [`.Is`] или [`ошибки.Как`] функции
+  путем объявления переменной ошибки верхнего уровня или пользовательского типа.
+- Является ли сообщение об ошибке статической строкой
+  или динамической строкой, требующей контекстной информации?
+  Для первого мы можем использовать [`errors.New`], но для второго мы должны
+  использовать [`fmt.Errorf`] или пользовательский тип ошибки.
+- Распространяем ли мы новую ошибку, возвращаемую нисходящей функцией?
+  Если да, то смотрите [раздел, посвященный переносу ошибок](error-wrap.md).
 
 [`errors.Is`]: https://pkg.go.dev/errors#Is
 [`errors.As`]: https://pkg.go.dev/errors#As
@@ -21,15 +21,15 @@ Consider the following before picking the option best suited for your use case.
 | No              | static        | [`errors.New`]                      |
 | No              | dynamic       | [`fmt.Errorf`]                      |
 | Yes             | static        | top-level `var` with [`errors.New`] |
-| Yes             | dynamic       | custom `error` type                 |
+| Yes             | dynamic       | пользовательский тип `error`        |
 
 [`errors.New`]: https://pkg.go.dev/errors#New
 [`fmt.Errorf`]: https://pkg.go.dev/fmt#Errorf
 
-For example,
-use [`errors.New`] for an error with a static string.
-Export this error as a variable to support matching it with `errors.Is`
-if the caller needs to match and handle this error.
+Например,
+используйте [`errors.New`] для ошибки со статической строкой.
+Экспортируйте эту ошибку в качестве переменной, чтобы поддерживать сопоставление с `errors.Is",
+если вызывающей стороне необходимо сопоставить и обработать эту ошибку.
 
 <table>
 <thead><tr><th>No error matching</th><th>Error matching</th></tr></thead>
@@ -76,9 +76,9 @@ if err := foo.Open(); err != nil {
 </td></tr>
 </tbody></table>
 
-For an error with a dynamic string,
-use [`fmt.Errorf`] if the caller does not need to match it,
-and a custom `error` if the caller does need to match it.
+Для ошибки с динамической строкой
+используйте [`fmt.Errorf`], если вызывающей стороне не нужно сопоставлять ее,
+и пользовательскую "ошибку", если вызывающей стороне действительно нужно сопоставить ее.
 
 <table>
 <thead><tr><th>No error matching</th><th>Error matching</th></tr></thead>
@@ -133,5 +133,5 @@ if err := foo.Open("testfile.txt"); err != nil {
 </td></tr>
 </tbody></table>
 
-Note that if you export error variables or types from a package,
-they will become part of the public API of the package.
+Обратите внимание, что если вы экспортируете переменные или типы ошибок из пакета,
+они станут частью общедоступного API пакета.

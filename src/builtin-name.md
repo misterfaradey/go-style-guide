@@ -1,12 +1,12 @@
-# Avoid Using Built-In Names
+# Избегайте использования встроенных имен
 
-The Go [language specification] outlines several built-in,
-[predeclared identifiers] that should not be used as names within Go programs.
+В [языковой спецификации Go] описаны несколько встроенных
+[предопределенных идентификаторов], которые не следует использовать в качестве имен в программах Go.
 
-Depending on context, reusing these identifiers as names will either shadow
-the original within the current lexical scope (and any nested scopes) or make
-affected code confusing. In the best case, the compiler will complain; in the
-worst case, such code may introduce latent, hard-to-grep bugs.
+В зависимости от контекста повторное использование этих идентификаторов в качестве имен либо затеняет
+оригинал в текущей лексической области (и любых вложенных областях), либо
+приводит к путанице в коде. В лучшем случае компилятор будет жаловаться; в
+худшем случае такой код может содержать скрытые, трудно поддающиеся исправлению ошибки.
 
   [language specification]: https://go.dev/ref/spec
   [predeclared identifiers]: https://go.dev/ref/spec#Predeclared_identifiers

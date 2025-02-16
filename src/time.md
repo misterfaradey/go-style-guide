@@ -1,28 +1,28 @@
-# Use `"time"` to handle time
+# Используйте `time` для управления временем
 
-Time is complicated. Incorrect assumptions often made about time include the
-following.
+Время - это сложная штука. Часто делаются следующие неверные предположения о времени
+.
 
-1. A day has 24 hours
-2. An hour has 60 minutes
-3. A week has 7 days
-4. A year has 365 days
-5. [And a lot more](https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time)
+1. В сутках 24 часа
+2. В часе 60 минут
+3. В неделе 7 дней
+4. В году 365 дней
+5. [И многое другое](https://infiniteundo.com/post/25326999628/falsehoods-programmers-believe-about-time)
 
-For example, *1* means that adding 24 hours to a time instant will not always
-yield a new calendar day.
+Например, *1* означает, что добавление 24 часов к моменту времени не всегда
+приводит к появлению нового календарного дня.
 
-Therefore, always use the [`"time"`] package when dealing with time because it
-helps deal with these incorrect assumptions in a safer, more accurate manner.
+Поэтому всегда используйте пакет [`"time"`] при работе со временем, поскольку он
+помогает справиться с этими неверными предположениями более безопасным и точным способом.
 
-  [`"time"`]: https://pkg.go.dev/time
+[`"time"`]: https://pkg.go.dev/time
 
-## Use `time.Time` for instants of time
+## Используйте `time.Time` для значений моментов времени
 
-Use [`time.Time`] when dealing with instants of time, and the methods on
-`time.Time` when comparing, adding, or subtracting time.
+Используйте [`time.Time`] при работе с моментами времени и методы
+"time.Время" при сравнении, сложении или вычитании времени.
 
-  [`time.Time`]: https://pkg.go.dev/time#Time
+[`time.Time`]: https://pkg.go.dev/time#Time
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -46,11 +46,11 @@ func isActive(now, start, stop time.Time) bool {
 </td></tr>
 </tbody></table>
 
-## Use `time.Duration` for periods of time
+## Используйте `time.Продолжительность` для обозначения периодов времени
 
-Use [`time.Duration`] when dealing with periods of time.
+Используйте [`time.Длительность"], когда речь идет о периодах времени.
 
-  [`time.Duration`]: https://pkg.go.dev/time#Duration
+[`time.Продолжительность`]: https://pkg.go.dev/time#Duration
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -65,7 +65,7 @@ func poll(delay int) {
   }
 }
 
-poll(10) // was it seconds or milliseconds?
+poll(10) // это были секунды или миллисекунды?
 ```
 
 </td><td>
@@ -84,11 +84,11 @@ poll(10*time.Second)
 </td></tr>
 </tbody></table>
 
-Going back to the example of adding 24 hours to a time instant, the method we
-use to add time depends on intent. If we want the same time of the day, but on
-the next calendar day, we should use [`Time.AddDate`]. However, if we want an
-instant of time guaranteed to be 24 hours after the previous time, we should
-use [`Time.Add`].
+Возвращаясь к примеру добавления 24 часов к моменту времени, метод, который мы
+используем для добавления времени, зависит от цели. Если мы хотим получить то же время суток, но на
+следующий календарный день, мы должны использовать [`Time.AddDate`]. Однако, если мы хотим
+, чтобы момент времени гарантированно был на 24 часа позже предыдущего, мы должны
+использовать [`Time.Add`].
 
   [`Time.AddDate`]: https://pkg.go.dev/time#Time.AddDate
   [`Time.Add`]: https://pkg.go.dev/time#Time.Add
@@ -98,19 +98,19 @@ newDay := t.AddDate(0 /* years */, 0 /* months */, 1 /* days */)
 maybeNewDay := t.Add(24 * time.Hour)
 ```
 
-## Use `time.Time` and `time.Duration` with external systems
+## Используйте `time.Time` и `time.Duration` во внешних системах
 
-Use `time.Duration` and `time.Time` in interactions with external systems when
-possible. For example:
+По возможности используйте `time.Duration` и `time.Time` при взаимодействии с внешними системами
+. Например:
 
-- Command-line flags: [`flag`] supports `time.Duration` via
+- Флаги командной строки: [`flag`] поддерживает "time".Длительность" с помощью
   [`time.ParseDuration`]
-- JSON: [`encoding/json`] supports encoding `time.Time` as an [RFC 3339]
-  string via its [`UnmarshalJSON` method]
-- SQL: [`database/sql`] supports converting `DATETIME` or `TIMESTAMP` columns
-  into `time.Time` and back if the underlying driver supports it
-- YAML: [`gopkg.in/yaml.v2`] supports `time.Time` as an [RFC 3339] string, and
-  `time.Duration` via [`time.ParseDuration`].
+- JSON: [`encoding/json`] поддерживает кодировку `time.Time` в виде строки [RFC 3339]
+  с помощью метода [`UnmarshalJSON`]
+- SQL: [`database/sql`] поддерживает преобразование столбцов `DATETIME` или `TIMESTAMP`
+  в `time.Time` и обратно, если базовый драйвер поддерживает это
+- YAML: [`gopkg.in/yaml.v2`] поддерживает `time.Time` в виде строки [RFC 3339], и
+  `time.Duration` через [`time.ParseDuration`].
 
   [`flag`]: https://pkg.go.dev/flag
   [`time.ParseDuration`]: https://pkg.go.dev/time#ParseDuration
@@ -120,11 +120,11 @@ possible. For example:
   [`database/sql`]: https://pkg.go.dev/database/sql
   [`gopkg.in/yaml.v2`]: https://pkg.go.dev/gopkg.in/yaml.v2
 
-When it is not possible to use `time.Duration` in these interactions, use
-`int` or `float64` and include the unit in the name of the field.
+Если использовать `time.Duration` невозможно в этих взаимодействиях, используйте
+`int` или `float64` и укажите единицу измерения в названии поля.
 
-For example, since `encoding/json` does not support `time.Duration`, the unit
-is included in the name of the field.
+Например, поскольку `encoding/json` не поддерживает `time.Duration`, единица
+измерения включена в название поля.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -150,19 +150,19 @@ type Config struct {
 </td></tr>
 </tbody></table>
 
-When it is not possible to use `time.Time` in these interactions, unless an
-alternative is agreed upon, use `string` and format timestamps as defined in
-[RFC 3339]. This format is used by default by [`Time.UnmarshalText`] and is
-available for use in `Time.Format` and `time.Parse` via [`time.RFC3339`].
+Когда использовать `time.Time` невозможно.При таких взаимодействиях, если
+не согласован альтернативный вариант, используйте "string" и форматируйте временные метки, как определено в
+[RFC 3339]. Этот формат по умолчанию используется [`Time.UnmarshalText`] и
+доступен для использования в `Time.Format` и `time.Parse` с помощью [`time.RFC3339`].
 
-  [`Time.UnmarshalText`]: https://pkg.go.dev/time#Time.UnmarshalText
-  [`time.RFC3339`]: https://pkg.go.dev/time#RFC3339
+[`Time.UnmarshalText`]: https://pkg.go.dev/time#Time.UnmarshalText
+[`time.RFC3339`]: https://pkg.go.dev/time#RFC3339
 
-Although this tends to not be a problem in practice, keep in mind that the
-`"time"` package does not support parsing timestamps with leap seconds
-([8728]), nor does it account for leap seconds in calculations ([15190]). If
-you compare two instants of time, the difference will not include the leap
-seconds that may have occurred between those two instants.
+Хотя на практике это, как правило, не является проблемой, имейте в виду, что
+пакет `"time"` не поддерживает синтаксический анализ временных меток с использованием високосных секунд
+([8728]), а также не учитывает високосные секунды в расчетах ([15190]). Если
+вы сравниваете два момента времени, разница не будет включать в себя високосные
+секунды, которые могли произойти между этими двумя моментами.
 
-  [8728]: https://github.com/golang/go/issues/8728
-  [15190]: https://github.com/golang/go/issues/15190
+[8728]: https://github.com/golang/go/issues/8728
+[15190]: https://github.com/golang/go/issues/15190

@@ -1,23 +1,23 @@
-# Avoid Embedding Types in Public Structs
+# Избегайте встраивания типов в общедоступные структуры
 
-These embedded types leak implementation details, inhibit type evolution, and
-obscure documentation.
+Эти встроенные типы приводят к утечке информации о реализации, препятствуют эволюции типов и
+скрывают документацию.
 
-Assuming you have implemented a variety of list types using a shared
-`AbstractList`, avoid embedding the `AbstractList` in your concrete list
-implementations.
-Instead, hand-write only the methods to your concrete list that will delegate
-to the abstract list.
+Предполагая, что вы реализовали множество типов списков, используя общий
+"AbstractList", избегайте встраивания "AbstractList" в ваши конкретные
+реализации списков.
+Вместо этого от руки запишите в свой конкретный список только те методы, которые будут делегированы
+абстрактному списку.
 
 ```go
 type AbstractList struct {}
 
-// Add adds an entity to the list.
+// Add добавляет объект в список.
 func (l *AbstractList) Add(e Entity) {
   // ...
 }
 
-// Remove removes an entity from the list.
+// Remove удаляет объект из списка.
 func (l *AbstractList) Remove(e Entity) {
   // ...
 }
@@ -29,7 +29,7 @@ func (l *AbstractList) Remove(e Entity) {
 <tr><td>
 
 ```go
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   *AbstractList
 }
@@ -38,17 +38,17 @@ type ConcreteList struct {
 </td><td>
 
 ```go
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   list *AbstractList
 }
 
-// Add adds an entity to the list.
+// Add добавляет объект в список.
 func (l *ConcreteList) Add(e Entity) {
   l.list.Add(e)
 }
 
-// Remove removes an entity from the list.
+// Remove удаляет объект из списка.
 func (l *ConcreteList) Remove(e Entity) {
   l.list.Remove(e)
 }
@@ -57,24 +57,24 @@ func (l *ConcreteList) Remove(e Entity) {
 </td></tr>
 </tbody></table>
 
-Go allows [type embedding] as a compromise between inheritance and composition.
-The outer type gets implicit copies of the embedded type's methods.
-These methods, by default, delegate to the same method of the embedded
-instance.
+Go допускает [type embedding] в качестве компромисса между наследованием и композицией.
+Внешний тип получает неявные копии методов встроенного типа.
+Эти методы по умолчанию делегируются тому же методу встроенного
+экземпляра.
 
   [type embedding]: https://go.dev/doc/effective_go#embedding
 
-The struct also gains a field by the same name as the type.
-So, if the embedded type is public, the field is public.
-To maintain backward compatibility, every future version of the outer type must
-keep the embedded type.
+Структура также получает поле с тем же именем, что и тип.
+Таким образом, если встроенный тип является общедоступным, то и поле будет общедоступным.
+Для обеспечения обратной совместимости каждая будущая версия внешнего типа должна
+сохранять встроенный тип.
 
-An embedded type is rarely necessary.
-It is a convenience that helps you avoid writing tedious delegate methods.
+Встроенный тип редко бывает необходим.
+Это удобство, которое помогает вам избежать написания утомительных методов делегирования.
 
-Even embedding a compatible AbstractList *interface*, instead of the struct,
-would offer the developer more flexibility to change in the future, but still
-leak the detail that the concrete lists use an abstract implementation.
+Даже внедрение совместимого интерфейса AbstractList *interface* вместо struct
+предоставило бы разработчику больше гибкости для внесения изменений в будущем, но все равно
+привело бы к утечке информации о том, что конкретные списки используют абстрактную реализацию.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -82,14 +82,14 @@ leak the detail that the concrete lists use an abstract implementation.
 <tr><td>
 
 ```go
-// AbstractList is a generalized implementation
-// for various kinds of lists of entities.
+// AbstractList - это обобщенная реализация
+// для различных видов списков сущностей.
 type AbstractList interface {
   Add(Entity)
   Remove(Entity)
 }
 
-// ConcreteList is a list of entities.
+// ConcreteList - это список сущностей.
 type ConcreteList struct {
   AbstractList
 }
@@ -117,16 +117,16 @@ func (l *ConcreteList) Remove(e Entity) {
 </td></tr>
 </tbody></table>
 
-Either with an embedded struct or an embedded interface, the embedded type
-places limits on the evolution of the type.
+Как во встроенной структуре, так и во встроенном интерфейсе встроенный тип
+накладывает ограничения на эволюцию типа.
 
-- Adding methods to an embedded interface is a breaking change.
-- Removing methods from an embedded struct is a breaking change.
-- Removing the embedded type is a breaking change.
-- Replacing the embedded type, even with an alternative that satisfies the same
-  interface, is a breaking change.
+- Добавление методов во встроенный интерфейс является кардинальным изменением.
+- Удаление методов из встроенной структуры является кардинальным изменением.
+- Удаление встроенного типа является кардинальным изменением.
+- Замена встроенного типа даже на альтернативный, удовлетворяющий тем же требованиям.
+  интерфейс - это кардинальное изменение.
 
-Although writing these delegate methods is tedious, the additional effort hides
-an implementation detail, leaves more opportunities for change, and also
-eliminates indirection for discovering the full List interface in
-documentation.
+Хотя написание этих методов делегирования является утомительным занятием, дополнительные усилия скрывают
+детали реализации, оставляют больше возможностей для изменений, а также
+устраняет косвенные ссылки для поиска полного интерфейса списка в
+документации.

@@ -1,16 +1,16 @@
-# Function Grouping and Ordering
+# Группировка и упорядочение функций
 
-- Functions should be sorted in rough call order.
-- Functions in a file should be grouped by receiver.
+- Функции должны быть отсортированы в приблизительном порядке вызова.
+- Функции в файле должны быть сгруппированы по получателю.
 
-Therefore, exported functions should appear first in a file, after
-`struct`, `const`, `var` definitions.
+Поэтому экспортируемые функции должны отображаться в файле первыми, после
+определений `struct`, `const`, `var`.
 
-A `newXYZ()`/`NewXYZ()` may appear after the type is defined, but before the
-rest of the methods on the receiver.
+`new XYZ()`/`NewXYZ()` может появиться после определения типа, но перед
+остальными методами в получателе.
 
-Since functions are grouped by receiver, plain utility functions should appear
-towards the end of the file.
+Поскольку функции сгруппированы по получателю, простые служебные функции должны отображаться
+ближе к концу файла.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

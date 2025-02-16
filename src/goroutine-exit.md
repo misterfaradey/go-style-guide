@@ -1,11 +1,11 @@
-# Wait for goroutines to exit
+# Дождитесь завершения работы подпрограммы
 
-Given a goroutine spawned by the system,
-there must be a way to wait for the goroutine to exit.
-There are two popular ways to do this:
+Учитывая, что система запускает подпрограмму,
+должен быть способ дождаться завершения работы подпрограммы.
+Есть два популярных способа сделать это:
 
-- Use a `sync.WaitGroup`.
-  Do this if there are multiple goroutines that you want to wait for
+- Используйте `sync.WaitGroup`.
+  Сделайте это, если есть несколько подпрограмм, выполнения которых вы хотите дождаться
 
     ```go
     var wg sync.WaitGroup
@@ -21,8 +21,8 @@ There are two popular ways to do this:
     wg.Wait()
     ```
 
-- Add another `chan struct{}` that the goroutine closes when it's done.
-  Do this if there's only one goroutine.
+- Добавьте еще одну `chan struct{}`, которую программа закрывает по завершении работы.
+  Сделайте это, если есть только одна программа.
 
     ```go
     done := make(chan struct{})
@@ -31,6 +31,6 @@ There are two popular ways to do this:
       // ...
     }()
 
-    // To wait for the goroutine to finish:
+    // Дождаться завершения работы программы:
     <-done
     ```

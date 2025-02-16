@@ -1,7 +1,7 @@
-# Initializing Struct References
+# Инициализация ссылок на структуры
 
-Use `&T{}` instead of `new(T)` when initializing struct references so that it
-is consistent with the struct initialization.
+Используйте `&T{}` вместо `new(T)` при инициализации ссылок на структуры, чтобы это
+соответствовало инициализации структуры.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -11,7 +11,7 @@ is consistent with the struct initialization.
 ```go
 sval := T{Name: "foo"}
 
-// inconsistent
+// несоответствующий
 sptr := new(T)
 sptr.Name = "bar"
 ```

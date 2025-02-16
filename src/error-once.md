@@ -1,36 +1,36 @@
-# Handle Errors Once
+# Обрабатывать ошибки один раз
 
-When a caller receives an error from a callee,
-it can handle it in a variety of different ways
-depending on what it knows about the error.
+Когда вызывающий абонент получает сообщение об ошибке от вызываемого объекта,
+он может обрабатывать его различными способами
+в зависимости от того, что ему известно об ошибке.
 
-These include, but not are limited to:
+К ним относятся, но не ограничиваются ими:
 
-- if the callee contract defines specific errors,
-  matching the error with `errors.Is` or `errors.As`
-  and handling the branches differently
-- if the error is recoverable,
-  logging the error and degrading gracefully
-- if the error represents a domain-specific failure condition,
-  returning a well-defined error
-- returning the error, either [wrapped](error-wrap.md) or verbatim
+- если контракт вызываемого абонента определяет конкретные ошибки,
+  сопоставьте ошибку с "errors.Is` или `errors.As"
+  и обработайте ветви по-разному
+- если ошибка исправима,
+  зарегистрируйте ошибку и исправьте ее корректно
+- если ошибка представляет собой сбой, связанный с конкретным доменом,
+  возвращает четко определенную ошибку
+- возвращает ошибку, либо [завернутую](error-wrap.md), либо дословно
 
-Regardless of how the caller handles the error,
-it should typically handle each error only once.
-The caller should not, for example, log the error and then return it,
-because *its* callers may handle the error as well.
+Независимо от того, как вызывающий абонент обрабатывает ошибку,
+обычно он должен обрабатывать каждую ошибку только один раз.
+Вызывающий абонент не должен, например, регистрировать ошибку и затем возвращать ее,
+поскольку *его* вызывающие абоненты также могут обрабатывать ошибку.
 
-For example, consider the following cases:
+Например, рассмотрим следующие случаи:
 
 <table>
 <thead><tr><th>Description</th><th>Code</th></tr></thead>
 <tbody>
 <tr><td>
 
-**Bad**: Log the error and return it
+**Bad**: Зарегистрируйте ошибку и верните ее
 
-Callers further up the stack will likely take a similar action with the error.
-Doing so causing a lot of noise in the application logs for little value.
+Абоненты, находящиеся выше по стеку, скорее всего, предпримут аналогичные действия с ошибкой.
+Это приведет к появлению большого количества помех в журналах приложений, что не принесет никакой пользы.
 
 </td><td>
 
@@ -46,11 +46,11 @@ if err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Wrap the error and return it
+**Good**: Обработайте ошибку и верните ее обратно
 
-Callers further up the stack will handle the error.
-Use of `%w` ensures they can match the error with `errors.Is` or `errors.As`
-if relevant.
+Вызывающие абоненты, расположенные выше по стеку, обработают ошибку.
+Использование "%w" гарантирует, что они смогут сопоставить ошибку с `errors.Is` или `errors.As"
+, если это уместно.
 
 </td><td>
 
@@ -64,18 +64,18 @@ if err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Log the error and degrade gracefully
+**Good**: Зарегистрируйте ошибку и исправьте ее должным образом
 
-If the operation isn't strictly necessary,
-we can provide a degraded but unbroken experience
-by recovering from it.
+Если операция не является строго необходимой, 
+мы можем обеспечить исправление ошибки,
+но без сбоев, восстановив ее.
 
 </td><td>
 
 ```go
 if err := emitMetrics(); err != nil {
-  // Failure to write metrics should not
-  // break the application.
+	// Невозможность записи показателей 
+	// не должна приводить к прерыванию работы приложения.
   log.Printf("Could not emit metrics: %v", err)
 }
 
@@ -84,14 +84,14 @@ if err := emitMetrics(); err != nil {
 </td></tr>
 <tr><td>
 
-**Good**: Match the error and degrade gracefully
+**Good**: Сопоставьте ошибку и корректно устраните ее
 
-If the callee defines a specific error in its contract,
-and the failure is recoverable,
-match on that error case and degrade gracefully.
-For all other cases, wrap the error and return it.
+Если вызываемый объект определяет конкретную ошибку в своем контракте
+и сбой можно устранить,
+сопоставьте этот случай ошибки и корректно устраните его.
+Во всех остальных случаях завершите обработку ошибки и верните ее.
 
-Callers further up the stack will handle other errors.
+Вызывающие абоненты, находящиеся выше по стеку, будут обрабатывать другие ошибки.
 
 </td><td>
 
@@ -99,7 +99,7 @@ Callers further up the stack will handle other errors.
 tz, err := getUserTimeZone(id)
 if err != nil {
   if errors.Is(err, ErrUserNotFound) {
-    // User doesn't exist. Use UTC.
+    // Пользователь не существует. Используйте UTC.
     tz = time.UTC
   } else {
     return fmt.Errorf("get user %q: %w", id, err)

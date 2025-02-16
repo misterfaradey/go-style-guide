@@ -1,7 +1,7 @@
-# Avoid Mutable Globals
+# Избегайте изменяемых глобальных переменных
 
-Avoid mutating global variables, instead opting for dependency injection.
-This applies to function pointers as well as other kinds of values.
+Избегайте изменения глобальных переменных, вместо этого выбирайте внедрение зависимостей.
+Это относится как к указателям на функции, так и к другим типам значений.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

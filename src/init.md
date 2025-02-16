@@ -1,23 +1,23 @@
-# Avoid `init()`
+# Избегайте `init()`
 
-Avoid `init()` where possible. When `init()` is unavoidable or desirable, code
-should attempt to:
+По возможности избегайте `init()`. Когда `init()` неизбежен или желателен, код
+должен попытаться это сделать:
 
-1. Be completely deterministic, regardless of program environment or invocation.
-2. Avoid depending on the ordering or side-effects of other `init()` functions.
-   While `init()` ordering is well-known, code can change, and thus
-   relationships between `init()` functions can make code brittle and
-   error-prone.
-3. Avoid accessing or manipulating global or environment state, such as machine
-   information, environment variables, working directory, program
-   arguments/inputs, etc.
-4. Avoid I/O, including both filesystem, network, and system calls.
+1. Быть полностью детерминированным, независимо от программной среды или вызова.
+2. Избегайте зависимости от порядка выполнения или побочных эффектов других функций init().
+   Хотя порядок выполнения init() хорошо известен, код может меняться, и, следовательно,
+   взаимосвязи между функциями init() могут сделать код хрупким и
+   подверженным ошибкам.
+3. Избегайте доступа к глобальным данным или состоянию среды или манипулирования ими, таким как машинная
+   информация, переменные среды, рабочий каталог, программа
+   аргументы/входные данные и т.д.
+4. Избегайте операций ввода-вывода, включая вызовы файловой системы, сети и системные вызовы.
 
-Code that cannot satisfy these requirements likely belongs as a helper to be
-called as part of `main()` (or elsewhere in a program's lifecycle), or be
-written as part of `main()` itself. In particular, libraries that are intended
-to be used by other programs should take special care to be completely
-deterministic and not perform "init magic".
+Код, который не может удовлетворить этим требованиям, скорее всего, является вспомогательным и должен
+вызываться как часть функции main() (или где-либо еще в жизненном цикле программы) или быть
+написан как часть самой функции main(). В частности, библиотеки, предназначенные
+для использования другими программами, должны быть полностью
+детерминированными и не выполнять "магию инициализации".
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -45,7 +45,7 @@ var _defaultFoo = Foo{
     // ...
 }
 
-// or, better, for testability:
+// или, что еще лучше, для удобства тестирования:
 
 var _defaultFoo = defaultFoo()
 
@@ -67,7 +67,7 @@ type Config struct {
 var _config Config
 
 func init() {
-    // Bad: based on current directory
+    // Bad: на основе текущего каталога
     cwd, _ := os.Getwd()
 
     // Bad: I/O
@@ -105,12 +105,12 @@ func loadConfig() Config {
 </td></tr>
 </tbody></table>
 
-Considering the above, some situations in which `init()` may be preferable or
-necessary might include:
+Учитывая вышесказанное, некоторые ситуации, в которых использование it() может быть предпочтительным или
+необходимым, могут включать в себя:
 
-- Complex expressions that cannot be represented as single assignments.
-- Pluggable hooks, such as `database/sql` dialects, encoding type registries, etc.
-- Optimizations to [Google Cloud Functions] and other forms of deterministic
-  precomputation.
+- Сложные выражения, которые нельзя представить в виде отдельных назначений.
+- Подключаемые перехватчики, такие как диалекты базы данных/sql, реестры типов кодировок и т.д.
+- Оптимизация [облачных функций Google] и других форм детерминированных
+  предварительных вычислений.
 
-  [Google Cloud Functions]: https://cloud.google.com/functions/docs/bestpractices/tips#use_global_variables_to_reuse_objects_in_future_invocations
+  [Облачные функции Google]: https://cloud.google.com/functions/docs/bestpractices/tips#use_global_variables_to_reuse_objects_in_future_invocations

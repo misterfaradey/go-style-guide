@@ -1,9 +1,9 @@
-# Avoid overly long lines
+# Избегайте слишком длинных строк
 
-Avoid lines of code that require readers to scroll horizontally
-or turn their heads too much.
+Избегайте строк кода, которые требуют от читателей прокрутки по горизонтали
+или чрезмерного поворота головы.
 
-We recommend a soft line length limit of **99 characters**.
-Authors should aim to wrap lines before hitting this limit,
-but it is not a hard limit.
-Code is allowed to exceed this limit.
+Мы рекомендуем ограничивать длину строки не более чем **99 символами **.
+Авторам следует стремиться к завершению строк до достижения этого предела,
+но это не является жестким ограничением.
+Коду разрешено превышать этот предел.

@@ -1,37 +1,37 @@
-# Error Wrapping
+# Перенос ошибок
 
-There are three main options for propagating errors if a call fails:
+Существует три основных варианта распространения ошибок в случае сбоя вызова:
 
-- return the original error as-is
-- add context with `fmt.Errorf` and the `%w` verb
-- add context with `fmt.Errorf` and the `%v` verb
+- вернуть исходную ошибку как есть
+- добавить контекст с помощью `fmt.Errorf` и глагола `%w`
+- добавьте контекст с помощью `fmt.Errorf` и глагола `%v`
 
-Return the original error as-is if there is no additional context to add.
-This maintains the original error type and message.
-This is well suited for cases when the underlying error message
-has sufficient information to track down where it came from.
+Верните исходную ошибку как есть, если нет дополнительного контекста для добавления.
+При этом сохраняются исходный тип ошибки и сообщение.
+Это хорошо подходит для случаев, когда исходное сообщение об ошибке
+содержит достаточно информации, чтобы отследить, откуда оно пришло.
 
-Otherwise, add context to the error message where possible
-so that instead of a vague error such as "connection refused",
-you get more useful errors such as "call service foo: connection refused".
+В противном случае, по возможности, добавьте контекст к сообщению об ошибке
+, чтобы вместо неопределенной ошибки, такой как "отказано в подключении", отображалась ошибка,
+вы получаете более полезные ошибки, такие как "вызов службы foo: отказано в подключении".
 
-Use `fmt.Errorf` to add context to your errors,
-picking between the `%w` or `%v` verbs
-based on whether the caller should be able to
-match and extract the underlying cause.
+Используйте `fmt.Errorf`, чтобы добавить контекст к вашим ошибкам,
+выбирая между глаголами `%w` или `%v`
+в зависимости от того, сможет ли вызывающий
+объект сопоставить и извлечь основную причину.
 
-- Use `%w` if the caller should have access to the underlying error.
-  This is a good default for most wrapped errors,
-  but be aware that callers may begin to rely on this behavior.
-  So for cases where the wrapped error is a known `var` or type,
-  document and test it as part of your function's contract.
-- Use `%v` to obfuscate the underlying error.
-  Callers will be unable to match it,
-  but you can switch to `%w` in the future if needed.
+- Используйте `%w`, если вызывающий абонент должен иметь доступ к основной ошибке.
+  Это хорошее значение по умолчанию для большинства обернутых ошибок,
+  но имейте в виду, что вызывающие абоненты могут начать полагаться на такое поведение.
+  Таким образом, в случаях, когда обернутая ошибка является известным значением "var" или типом,
+  задокументируйте и протестируйте ее как часть контракта вашей функции.
+- Используйте `%v`, чтобы скрыть основную ошибку.
+  Вызывающие абоненты не смогут найти ее,
+  но вы можете переключиться на "%w" в будущем, если потребуется.
 
-When adding context to returned errors, keep the context succinct by avoiding
-phrases like "failed to", which state the obvious and pile up as the error
-percolates up through the stack:
+При добавлении контекста к возвращаемым ошибкам сохраняйте краткость контекста, избегая
+таких фраз, как "не удалось выполнить", которые указывают на очевидное и накапливаются по мере распространения ошибки
+по стеку:
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -71,9 +71,9 @@ x: y: new store: the error
 </td></tr>
 </tbody></table>
 
-However once the error is sent to another system, it should be clear the
-message is an error (e.g. an `err` tag or "Failed" prefix in logs).
+Однако, как только ошибка отправляется в другую систему, должно быть ясно
+, что сообщение является ошибкой (например, тег "err" или префикс "Failed" в журналах).
 
-See also [Don't just check errors, handle them gracefully].
+Смотрите также [Не просто проверяйте ошибки, а корректно обрабатывайте их].
 
-  [Don't just check errors, handle them gracefully]: https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully
+[Не просто проверяйте ошибки, а корректно обрабатывайте их]: https://dave.cheney.net/2016/04/27/dont-just-check-errors-handle-them-gracefully

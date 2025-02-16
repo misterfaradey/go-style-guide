@@ -1,10 +1,10 @@
-# Don't Panic
+# Не паникуйте
 
-Code running in production must avoid panics. Panics are a major source of
-[cascading failures]. If an error occurs, the function must return an error and
-allow the caller to decide how to handle it.
+Код, запущенный в рабочей среде, должен избегать паники. Паника является основным источником
+[каскадных сбоев]. При возникновении ошибки функция должна вернуть сообщение об ошибке и
+позволить вызывающей стороне решить, как с этим справиться.
 
-  [cascading failures]: https://en.wikipedia.org/wiki/Cascading_failure
+[каскадные сбои]: https://en.wikipedia.org/wiki/Cascading_failure
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -46,17 +46,17 @@ func main() {
 </td></tr>
 </tbody></table>
 
-Panic/recover is not an error handling strategy. A program must panic only when
-something irrecoverable happens such as a nil dereference. An exception to this is
-program initialization: bad things at program startup that should abort the
-program may cause panic.
+Panic/recovery не является стратегией обработки ошибок. Программа должна паниковать только тогда, когда
+происходит что-то непоправимое, например, нулевое разыменование. Исключением из этого правила является
+инициализация программы: сбои при запуске программы, которые должны привести к прерыванию работы
+программы, могут вызвать панику.
 
 ```go
 var _statusTemplate = template.Must(template.New("name").Parse("_statusHTML"))
 ```
 
-Even in tests, prefer `t.Fatal` or `t.FailNow` over panics to ensure that the
-test is marked as failed.
+Даже в тестах отдавайте предпочтение `t.Fatal` или `t.FailNow`, а не `panics`, чтобы убедиться, что
+тест помечен как неудачный.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

@@ -1,7 +1,7 @@
-# Unnecessary Else
+# Необязательный элемент Else
 
-If a variable is set in both branches of an if, it can be replaced with a
-single if.
+Если переменная задана в обеих ветвях if, ее можно заменить на
+один if.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>

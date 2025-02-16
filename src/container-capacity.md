@@ -1,26 +1,26 @@
-# Prefer Specifying Container Capacity
+# Предпочтительнее указывать емкость контейнера
 
-Specify container capacity where possible in order to allocate memory for the
-container up front. This minimizes subsequent allocations (by copying and
-resizing of the container) as elements are added.
+По возможности указывайте емкость контейнера, чтобы заранее выделить память для
+контейнера. Это сводит к минимуму последующие выделения (путем копирования и
+изменения размера контейнера) по мере добавления элементов.
 
-## Specifying Map Capacity Hints
+## Указание емкости карты дает подсказки
 
-Where possible, provide capacity hints when initializing
-maps with `make()`.
+Там, где это возможно, указывайте емкость при инициализации
+карт с помощью `make()`.
 
 ```go
 make(map[T1]T2, hint)
 ```
 
-Providing a capacity hint to `make()` tries to right-size the
-map at initialization time, which reduces the need for growing
-the map and allocations as elements are added to the map.
+Предоставляя подсказку о емкости для `make()`, вы пытаетесь настроить правильный размер
+карты во время инициализации, что уменьшает необходимость в увеличении
+карты и распределении ресурсов по мере добавления элементов на карту.
 
-Note that, unlike slices, map capacity hints do not guarantee complete,
-preemptive allocation, but are used to approximate the number of hashmap buckets
-required. Consequently, allocations may still occur when adding elements to the
-map, even up to the specified capacity.
+Обратите внимание, что, в отличие от фрагментов, подсказки о емкости карты не гарантируют полного и
+упреждающего распределения, а используются для приблизительного определения количества требуемых сегментов
+хэш-карты. Следовательно, при добавлении элементов на карту все равно могут происходить перераспределения
+, даже до указанной емкости.
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
@@ -51,31 +51,31 @@ for _, f := range files {
 </td></tr>
 <tr><td>
 
-`m` is created without a size hint; there may be more
-allocations at assignment time.
+`m` создается без указания размера; во время назначения может быть выделено больше
+ресурсов.
 
 </td><td>
 
-`m` is created with a size hint; there may be fewer
-allocations at assignment time.
+`m` создается с указанием размера; во время назначения может быть выделено меньше
+ресурсов.
 
 </td></tr>
 </tbody></table>
 
-## Specifying Slice Capacity
+## Указание емкости среза
 
-Where possible, provide capacity hints when initializing slices with `make()`,
-particularly when appending.
+По возможности указывайте емкость при инициализации срезов с помощью "make()",
+особенно при добавлении.
 
 ```go
 make([]T, length, capacity)
 ```
 
-Unlike maps, slice capacity is not a hint: the compiler will allocate enough
-memory for the capacity of the slice as provided to `make()`, which means that
-subsequent `append()` operations will incur zero allocations (until the length
-of the slice matches the capacity, after which any appends will require a resize
-to hold additional elements).
+В отличие от maps, емкость фрагмента не является подсказкой: компилятор выделит достаточно
+памяти для емкости фрагмента, как указано в `make()`, что означает, что
+последующие операции `append()` не будут требовать выделения нулевого объема (до тех пор, пока длина
+фрагмента не будет соответствовать емкости, после чего любое добавление потребуется изменить размер
+для размещения дополнительных элементов).
 
 <table>
 <thead><tr><th>Bad</th><th>Good</th></tr></thead>
